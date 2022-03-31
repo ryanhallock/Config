@@ -1,0 +1,32 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'java'
+    id 'maven-publish'
+}
+
+version = '1.0.0'
+
+dependencies {
+    compileOnly 'org.jetbrains:annotations:23.0.0'
+    compileOnly 'commons-lang:commons-lang:2.6'
+    compileOnly 'com.google.guava:guava:31.1-jre'
+    compileOnly 'org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT'
+
+    implementation 'org.yaml:snakeyaml:1.30'
+    implementation(project(':bukkit'))
+}
+
+shadowJar {
+    relocate 'org.bukkit.configuration', 'cc.kermanispretty.config.override'
+    relocate 'org.yaml.snakeyaml', 'cc.kermanispretty.config.override.ymal'
+
+    archiveClassifier.set('')
+}
+
+publishing {
+    publications {
+        shadow(MavenPublication) { publication ->
+            project.shadow.component(publication)
+        }
+    }
+}
