@@ -51,13 +51,16 @@ public class ConfigTest extends JavaPlugin {
 * `bukkit` under 1.18.1+
 * `bukkit-compatibility` for 1.7.10 - 1.18.2
 
+# Jitpack 
+You can use JitPack as your repository. [https://jitpack.io/#KermanIsPretty/Config/](https://jitpack.io/#KermanIsPretty/Config/)
+
 # TODO
 
 - [x] Upload to GitHub
 - [x] Working
-- [ ] Clean up Code (partially done)
+- [ ] Clean up Code (partially ~done)
 - [ ] Bungee & Velocity
-- [ ] Config Validation
+- [x] Config Validation
 - [ ] Add support for own sterilizers
 - [ ] Add better README.md detailing how to do more things.
 

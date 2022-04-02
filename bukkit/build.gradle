@@ -4,8 +4,6 @@ plugins {
     id 'maven-publish'
 }
 
-version = '1.0.0'
-
 dependencies {
     compileOnly 'org.yaml:snakeyaml:1.30'
     compileOnly 'org.jetbrains:annotations:23.0.0'
