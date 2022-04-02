@@ -4,6 +4,7 @@ import cc.kermanispretty.config.bukkit.BukkitConfig;
 import cc.kermanispretty.config.bukkit.BukkitConfigHandler;
 import cc.kermanispretty.config.common.ConfigHandler;
 import cc.kermanispretty.config.common.ConfigOptions;
+import cc.kermanispretty.config.common.validation.ValidationHandler;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
@@ -13,6 +14,7 @@ public class BukkitConfigBuilder {
     private String path;
     private String fileName;
     private ConfigHandler handler;
+    private ValidationHandler validationHandler = ValidationHandler.DEFAULT;
     private ConfigOptions options = ConfigOptions.DEFAULT;
     private final HashSet<Object> register = new HashSet<>();
 
@@ -50,12 +52,17 @@ public class BukkitConfigBuilder {
         return this;
     }
 
+    public BukkitConfigBuilder validationHandler(ValidationHandler validationHandler) {
+        this.validationHandler = validationHandler;
+        return this;
+    }
+
     public BukkitConfig build() {
         if (handler == null) {
             handler = new BukkitConfigHandler(path, fileName);
         }
 
-        BukkitConfig config = new BukkitConfig(handler, options);
+        BukkitConfig config = new BukkitConfig(handler, validationHandler, options);
 
         config.register(register);
 

@@ -1,6 +1,7 @@
 package cc.kermanispretty.config.bukkit;
 
 import cc.kermanispretty.config.common.ConfigHandler;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
