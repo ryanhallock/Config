@@ -52,7 +52,7 @@ public class ConfigTest extends JavaPlugin {
 * `bukkit-compatibility` for 1.7.10 - 1.18.2
 
 # Jitpack 
-You can use JitPack as your repository. [https://jitpack.io/#KermanIsPretty/Config/](https://jitpack.io/#KermanIsPretty/Config/)
+You can use JitPack as the repository for gradle/maven. [https://jitpack.io/#KermanIsPretty/Config/](https://jitpack.io/#KermanIsPretty/Config/)
 
 # TODO
 
