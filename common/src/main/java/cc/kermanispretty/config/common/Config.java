@@ -5,21 +5,23 @@ import cc.kermanispretty.config.common.annotation.comment.Comment;
 import cc.kermanispretty.config.common.annotation.comment.Footer;
 import cc.kermanispretty.config.common.annotation.comment.Header;
 import cc.kermanispretty.config.common.annotation.comment.InlineComment;
+import cc.kermanispretty.config.common.utils.ConfigUtils;
+import cc.kermanispretty.config.common.validation.ValidationHandler;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class Config {
     private ConfigHandler configHandler;
+    private ValidationHandler validationHandler;
     private ConfigOptions options;
     private Set<Object> registeredObjects;
 
-    public Config(ConfigHandler configHandler, ConfigOptions options) {
+    public Config(ConfigHandler configHandler, ValidationHandler validationHandler, ConfigOptions options) {
         this.configHandler = configHandler;
+        this.validationHandler = validationHandler;
         this.options = options;
         this.registeredObjects = new HashSet<>();
     }
@@ -34,7 +36,9 @@ public abstract class Config {
 
     // Allow for the JVM to clear us faster.
     public void unload() {
+        validationHandler.unload();
         registeredObjects.clear();
+        validationHandler = null;
         options = null;
         registeredObjects = null;
         configHandler = null;
@@ -62,12 +66,8 @@ public abstract class Config {
             String prefix = getPrefix(owningClass) + configHandler.separator(); // adds the seperator to the end
 
 
-            List<String> defaultHeader = owningClass.isAnnotationPresent(Header.class)
-                    ? Arrays.stream(owningClass.getAnnotation(Header.class).value()).collect(Collectors.toList())
-                    : null;
-            List<String> defaultFooter = owningClass.isAnnotationPresent(Footer.class)
-                    ? Arrays.stream(owningClass.getAnnotation(Footer.class).value()).collect(Collectors.toList())
-                    : null;
+            List<String> defaultHeader = ConfigUtils.getHeader(owningClass);
+            List<String> defaultFooter = ConfigUtils.getFooter(owningClass);
 
             List<String> configHeader = configHandler.getHeader();
             List<String> configFooter = configHandler.getFooter();
@@ -82,7 +82,7 @@ public abstract class Config {
                 didChange = true;
             }
 
-            //Recersive check for all comments sections.
+            //Recursive check for all comments sections.
             didChange |= checkSectionComments(owningClass);
 
             for (Field field : getFields(owningClass)) {
@@ -94,15 +94,16 @@ public abstract class Config {
                     //grab the default value from the field
                     Object defaultValue = field.get(instance);
 
+                    if (options.checkDefaultForValidation && defaultValue != null) {
+                        validationHandler.checkValidation(field, defaultValue, this);
+                    }
+
                     //grab annotation values
                     String location = prefix + field.getAnnotation(Configurable.class).value();
 
-                    List<String> defaultComments = field.isAnnotationPresent(Comment.class)
-                            ? Arrays.stream(field.getAnnotation(Comment.class).value()).collect(Collectors.toList())
-                            : null;
-                    List<String> defaultInlineComments = field.isAnnotationPresent(InlineComment.class)
-                            ? Arrays.stream(field.getAnnotation(InlineComment.class).value()).collect(Collectors.toList())
-                            : null;
+                    List<String> defaultComments = ConfigUtils.getComments(field);
+                    List<String> defaultInlineComments = ConfigUtils.getInlineComments(field);
+
 
                     //grab the value from the config
                     boolean exists = configHandler.exists(location);
@@ -115,18 +116,14 @@ public abstract class Config {
                         didChange = true;
                     }
 
-                    if (exists && defaultComments != null && !defaultComments.equals(configComments)) {
-                        configHandler.setComments(location, defaultComments);
-                        didChange = true;
-                    }
-
-                    if (exists && defaultInlineComments != null && !defaultInlineComments.equals(configInlineComments)) {
-                        configHandler.setInlineComments(location, defaultInlineComments);
-                        didChange = true;
-                    }
+                    didChange = updateComments(didChange, location, defaultComments, defaultInlineComments, exists, configComments, configInlineComments);
 
                     //dont set if the value was just default was just set.
-                    if (exists && defaultValue != configValue) field.set(instance, configValue);
+                    if (exists && defaultValue != configValue) {
+                        validationHandler.checkValidation(field, configValue, this);
+
+                        field.set(instance, configValue);
+                    }
                     if (!accessible) field.setAccessible(false); //reset the field to its original state
                 }
             }
@@ -137,34 +134,47 @@ public abstract class Config {
 
     public boolean checkSectionComments(Class<?> owningClass) {
         StringBuilder tempPrefix = new StringBuilder();
+        boolean didChange = false;
+
         for (Class<?> clazz : getConfigurableClasses(owningClass)) { //includes self and parents
             //Remove the sepearator from the end of the prefix.
-            String location = tempPrefix + clazz.getAnnotation(Configurable.class).value();
+            String name = clazz.getAnnotation(Configurable.class).value();
+            String location = tempPrefix + name;
 
-            tempPrefix.append(location).append(configHandler.separator());
+            tempPrefix.append(name).append(configHandler.separator()); //append the name
 
-            List<String> defaultComments = clazz.isAnnotationPresent(Comment.class)
-                    ? Arrays.stream(clazz.getAnnotation(Comment.class).value()).collect(Collectors.toList())
-                    : null;
-            List<String> defaultInlineComments = clazz.isAnnotationPresent(InlineComment.class)
-                    ? Arrays.stream(clazz.getAnnotation(InlineComment.class).value()).collect(Collectors.toList())
-                    : null;
+            List<String> defaultComments = ConfigUtils.getComments(clazz);
+            List<String> defaultInlineComments = ConfigUtils.getInlineComments(clazz);
 
             boolean exists = configHandler.exists(location);
             List<String> configComments = configHandler.getComments(location);
             List<String> configInlineComments = configHandler.getInlineComments(location);
 
             //Reset comments in a config section overwriting all there.
-            if (!exists
-                    || (defaultComments != null && !defaultComments.equals(configComments))
-                    || (defaultInlineComments != null && !defaultInlineComments.equals(configInlineComments))
-            ) {
+            if (!exists) {
                 configHandler.setDefaultSection(location, defaultComments, defaultInlineComments);
-                return true;
+                didChange = true;
             }
+
+            didChange = updateComments(didChange, location, defaultComments, defaultInlineComments, exists, configComments, configInlineComments);
         }
 
-        return false;
+        return didChange;
+    }
+
+    public boolean updateComments(boolean didChange, String location, List<String> defaultComments, List<String> defaultInlineComments,
+                                  boolean exists, List<String> configComments, List<String> configInlineComments) {
+        if (exists && defaultComments != null && !defaultComments.equals(configComments)) {
+            configHandler.setComments(location, defaultComments);
+            didChange = true;
+        }
+
+        if (exists && defaultInlineComments != null && !defaultInlineComments.equals(configInlineComments)) {
+            configHandler.setInlineComments(location, defaultInlineComments);
+            didChange = true;
+        }
+
+        return didChange;
     }
 
     //README: Even know streams are slower we use them here for readability. (also not called that often)
@@ -179,24 +189,24 @@ public abstract class Config {
     }
 
     //We use this to sort the classes so we dont have to sort with a if statement in the loop.
-    public Set<Class<?>> getConfigurableClasses(Class<?> clazz) {
+    public ArrayList<Class<?>> getConfigurableClasses(Class<?> clazz) {
         return getClasses(clazz)
                 .stream()
-                .filter(c -> c.isAnnotationPresent(Configurable.class))
-                .collect(Collectors.toSet());
+                .filter(it -> it.isAnnotationPresent(Configurable.class))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     //Reason this exists is because we also grab private fields. (declaredFields are public fields only)
-    public Set<Field> getFields(Class<?> owningClazz) {
+    public ArrayList<Field> getFields(Class<?> owningClazz) {
         return getClasses(owningClazz).stream()
                 .map(Class::getDeclaredFields)
                 .flatMap(Arrays::stream)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     //(Interface Class -> Super Class -> Declaring Class -> Class) recursive search optional.
-    public Set<Class<?>> getClasses(Class<?> owningClazz) {
-        HashSet<Class<?>> classes = new HashSet<>(); // unknown how to get rid of this without removing readability. TODO
+    public ArrayList<Class<?>> getClasses(Class<?> owningClazz) {
+        ArrayList<Class<?>> classes = new ArrayList<>(); // unknown how to get rid of this without removing readability. TODO
 
         if (options.searchInterfaces) {
             classes.addAll(Arrays.asList(owningClazz.getInterfaces()));
@@ -220,9 +230,8 @@ public abstract class Config {
             }
         }
 
-        //Expermental: TODO
-        if (options.searchReversibly && !classes.isEmpty()) { //dont create a new hashset if we dont need to.
-            HashSet<Class<?>> newClasses = new HashSet<>();
+        if (options.searchReversibly && !classes.isEmpty()) { //dont create a new arraylist if we dont need to.
+            ArrayList<Class<?>> newClasses = new ArrayList<>();
 
             for (Class<?> clazz : classes) {
                 newClasses.addAll(getClasses(clazz));
