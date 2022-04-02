@@ -4,8 +4,6 @@ plugins {
     id 'maven-publish'
 }
 
-version = '1.0.0'
-
 dependencies {
     compileOnly 'org.jetbrains:annotations:23.0.0'
     compileOnly 'commons-lang:commons-lang:2.6'
