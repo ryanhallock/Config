@@ -13,5 +13,5 @@ public @interface Configurable {
      * @return location of the configuration file location
      */
 
-    String value();
+    String value() default "";
 }
