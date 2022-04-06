@@ -9,6 +9,7 @@ import cc.kermanispretty.config.common.utils.ConfigUtils;
 import cc.kermanispretty.config.common.validation.ValidationHandler;
 
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -99,7 +100,7 @@ public abstract class Config {
                     }
 
                     //grab annotation values
-                    String location = prefix + field.getAnnotation(Configurable.class).value();
+                    String location = prefix + getLocation(field);
 
                     List<String> defaultComments = ConfigUtils.getComments(field);
                     List<String> defaultInlineComments = ConfigUtils.getInlineComments(field);
@@ -138,7 +139,7 @@ public abstract class Config {
 
         for (Class<?> clazz : getConfigurableClasses(owningClass)) { //includes self and parents
             //Remove the sepearator from the end of the prefix.
-            String name = clazz.getAnnotation(Configurable.class).value();
+            String name = getLocation(clazz);
             String location = tempPrefix + name;
 
             tempPrefix.append(name).append(configHandler.separator()); //append the name
@@ -184,7 +185,7 @@ public abstract class Config {
     public String getPrefix(Class<?> clazz) {
         return getConfigurableClasses(clazz)
                 .stream()
-                .map(it -> it.getAnnotation(Configurable.class).value())
+                .map(this::getLocation)
                 .collect(Collectors.joining(configHandler.separator()));
     }
 
@@ -202,6 +203,19 @@ public abstract class Config {
                 .map(Class::getDeclaredFields)
                 .flatMap(Arrays::stream)
                 .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    //use field or class name if empty
+    public String getLocation(AnnotatedElement annotatedElement) {
+        String location = annotatedElement.getAnnotation(Configurable.class).value();
+        if (location.isEmpty() || location.equals("null")) {
+            if (annotatedElement instanceof Field) {
+                location = ((Field) annotatedElement).getName();
+            } else {
+                location = ((Class<?>) annotatedElement).getSimpleName();
+            }
+        }
+        return location;
     }
 
     //(Interface Class -> Super Class -> Declaring Class -> Class) recursive search optional.
