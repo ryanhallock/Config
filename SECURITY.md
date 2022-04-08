@@ -14,4 +14,5 @@ Versions that are officaly supported by issues
 Contact me with more information
 
 > Discord: `TwentyCharatersGreat#5716` (195930934480994304)
+>
 > Telegram: `@KermanIsPretty`
