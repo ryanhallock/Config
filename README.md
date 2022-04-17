@@ -24,7 +24,7 @@ public class ConfigTest extends JavaPlugin {
             "This is second comment test"
     })
     //We can call this field for our config value after load
-    private final String test = "weTestingstuff"; // default value "weTestingStuff"
+    private String test = "weTestingstuff"; // default value "weTestingStuff"
     // Sections are divided up to. 
     // (Interface Class -> Super Class -> Declaring Class -> Class -> Field)
 
