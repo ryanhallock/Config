@@ -123,6 +123,14 @@ public abstract class Config {
                         ValidationProcessor.validate(fieldContext.getField(), transformedValue, validationHandler.getValidators(), this);
                     }
                 } else if (!fieldContext.isTransient()) {
+                    if (options.contains(ConfigOptionEnum.REPLACE_DEFAULT_WITH_TRANSFORMED)) {
+                        defaultValue = TransformerProcessor.transform(fieldContext.getField(), defaultValue, transformerHandler.getTransformers(), this);
+
+                        if (options.contains(ConfigOptionEnum.CHECK_DEFAULT_FOR_VALIDATION)) { // Revalidate.
+                            ValidationProcessor.validate(fieldContext.getField(), defaultValue, validationHandler.getValidators(), this);
+                        }
+                    }
+
                     configHandler.set(fieldContext, defaultValue);
 
                     didChange = true;
