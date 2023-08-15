@@ -13,7 +13,6 @@ import cc.kermanispretty.config.common.validation.ValidationHandler;
 import cc.kermanispretty.config.common.validation.processer.ValidationProcessor;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
@@ -45,13 +44,15 @@ public abstract class Config {
             Class<?> owningClass = isClass ? (Class<?>) object : object.getClass();
             Object instance = isClass ? null : object;
 
-            String separator = configHandler.separator(); // Store an instance of the seperator.
-            ArrayList<Class<?>> classHierarchy = ClassHierarchyProcessor.process(owningClass, null, options);
+            String separator = configHandler.separator(); // Store an instance of the separator.
+            LinkedHashSet<Class<?>> classHierarchy = new LinkedHashSet<>();
+
+            ClassHierarchyProcessor.process(classHierarchy, owningClass, options);
 
             Stream<Class<?>> classStream = classHierarchy.stream()
                     .filter(clazz -> clazz.isAnnotationPresent(Configurable.class));
 
-            ArrayList<Class<?>> classHierarchyCopy = new ArrayList<>(classHierarchy.size());
+            LinkedHashSet<Class<?>> classHierarchyCopy = new LinkedHashSet<>();
 
             classStream.forEachOrdered(clazz -> {
                 classHierarchyCopy.add(clazz); // Append it to the copy.

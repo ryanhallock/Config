@@ -14,9 +14,6 @@ public enum ConfigOptionEnum {
     CHECK_DEFAULT_TRANSFORMED_FOR_VALIDATION(true),
     CHECK_CONFIG_FOR_VALIDATION(true),
     CHECK_CONFIG_TRANSFORMED_FOR_VALIDATION(true),
-
-    @Deprecated(forRemoval = true)
-    SUPPRESS_VALIDATION_ERRORS(false),
     CHECK_DEFAULT_NULL(false);
 
     private final boolean defaultValue;

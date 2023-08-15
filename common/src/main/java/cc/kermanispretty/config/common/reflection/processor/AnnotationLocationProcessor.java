@@ -4,12 +4,12 @@ import cc.kermanispretty.config.common.annotation.Configurable;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
 public class AnnotationLocationProcessor {
 
-    public static String process(ArrayList<Class<?>> elements, String separator) {
+    public static String process(LinkedHashSet<Class<?>> elements, String separator) {
         return elements
                 .stream()
                 .map(AnnotationLocationProcessor::processSimpleName)

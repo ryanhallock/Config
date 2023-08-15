@@ -2,22 +2,14 @@ package cc.kermanispretty.config.common.reflection.processor;
 
 import cc.kermanispretty.config.common.ConfigOptionEnum;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.LinkedHashSet;
 
 public class ClassHierarchyProcessor {
 
     //(Interface Class -> Super Class -> Declaring Class -> Class) recursive search optional.
-    public static ArrayList<Class<?>> process(Class<?> owningClazz, ArrayList<Class<?>> prependingClasses, EnumSet<ConfigOptionEnum> configOptions) {
-        if (prependingClasses == null) {
-            prependingClasses = new ArrayList<>();
-        }
-
-        if (owningClazz == null) {
-            return prependingClasses;
-        }
-
+    public static void process(LinkedHashSet<Class<?>> prependingClasses, Class<?> owningClazz, EnumSet<ConfigOptionEnum> configOptions) {
         if (configOptions.contains(ConfigOptionEnum.SEARCH_INTERFACES)) {
             prependingClasses.addAll(Arrays.asList(owningClazz.getInterfaces()));
         }
@@ -41,23 +33,24 @@ public class ClassHierarchyProcessor {
         }
 
         if (configOptions.contains(ConfigOptionEnum.SEARCH_RECURSIVELY)) { // TODO: Experimental
-            ArrayList<Class<?>> newClasses = new ArrayList<>();
+            LinkedHashSet<Class<?>> newClasses = new LinkedHashSet<>();
 
             // Omit SEARCH_CURRENT_CLASS from the recursive search.
-            EnumSet<ConfigOptionEnum> optionEnums = EnumSet.copyOf(configOptions);
-            optionEnums.remove(ConfigOptionEnum.SEARCH_CURRENT_CLASS);
+            EnumSet<ConfigOptionEnum> omitedOptions = EnumSet.copyOf(configOptions);
+            omitedOptions.remove(ConfigOptionEnum.SEARCH_CURRENT_CLASS);
 
             for (Class<?> clazz : prependingClasses) {
-                newClasses.addAll(process(clazz, prependingClasses, optionEnums));
+                process(newClasses, clazz, omitedOptions);
             }
 
-            prependingClasses = newClasses;
+            newClasses.addAll(prependingClasses);
+
+            prependingClasses.clear(); // Cant reassign to prependingClasses because its not in this scope.
+            prependingClasses.addAll(newClasses);
         }
 
         if (configOptions.contains(ConfigOptionEnum.SEARCH_CURRENT_CLASS)) {
             prependingClasses.add(owningClazz);
         }
-
-        return prependingClasses;
     }
 }
