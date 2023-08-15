@@ -1,4 +1,5 @@
-rootProject.name = "config"
+rootProject.name = "Config"
+
 
 include 'common'
 include 'bukkit'

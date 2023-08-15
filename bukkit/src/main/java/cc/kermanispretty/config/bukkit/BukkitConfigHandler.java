@@ -1,9 +1,9 @@
 package cc.kermanispretty.config.bukkit;
 
 import cc.kermanispretty.config.common.ConfigHandler;
-import org.bukkit.configuration.ConfigurationSection;
+import cc.kermanispretty.config.common.reflection.context.CommentContext;
+import cc.kermanispretty.config.common.reflection.context.FieldContext;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class BukkitConfigHandler implements ConfigHandler {
         try {
             configuration.save(configPath);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(String.format("Failed to save annotation based config `%s`", configPath.getName()), e);
         }
     }
 
@@ -42,63 +42,73 @@ public class BukkitConfigHandler implements ConfigHandler {
     }
 
     @Override
-    public Object get(String location) {
-        return configuration.get(location);
+    public Object get(FieldContext context) {
+        return configuration.getObject(context.getLocation(), context.getOwningClass());
     }
 
     @Override
-    public List<String> getComments(String location) {
-        return configuration.getComments(location);
+    public List<String> getComment(CommentContext commentContext) {
+        if (!exists(commentContext.getLocation())) return null;
+
+        switch (commentContext.getType()) {
+            case LOCATION:
+            case SECTION:
+                return configuration.getComments(commentContext.getLocation());
+            case LOCATION_INLINE:
+            case SECTION_INLINE:
+                return configuration.getInlineComments(commentContext.getLocation());
+            case HEADER:
+                return configuration.options().getHeader();
+            case FOOTER:
+                return configuration.options().getFooter();
+            default:
+                throw new IllegalStateException("Unexpected value: " + commentContext.getType());
+        }
     }
 
     @Override
-    public List<String> getInlineComments(String location) {
-        return configuration.getInlineComments(location);
+    public void setComment(CommentContext commentContext) {
+        if (!exists(commentContext.getLocation()) && !commentContext.isField())
+            configuration.createSection(commentContext.getLocation());
+
+        List<String> comments = commentContext.getCommentListSplitFix();
+
+        switch (commentContext.getType()) {
+            case LOCATION:
+            case SECTION:
+                configuration.setComments(commentContext.getLocation(), comments);
+                break;
+            case LOCATION_INLINE:
+            case SECTION_INLINE:
+                configuration.setInlineComments(commentContext.getLocation(), comments);
+                break;
+            case HEADER:
+                configuration.options().setHeader(comments);
+                break;
+            case FOOTER:
+                configuration.options().setFooter(comments);
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + commentContext.getType());
+        }
     }
 
     @Override
-    public void setComments(String location, List<String> comments) {
-        configuration.setComments(location, comments);
+    public void set(FieldContext context, Object value) {
+        configuration.set(context.getLocation(), value);
     }
 
-    @Override
-    public void setInlineComments(String location, List<String> comments) {
-        configuration.setInlineComments(location, comments);
+    @Override // All of these should exist already
+    public boolean shouldUpdateComments(CommentContext context) {
+        List<String> splitFixComments = context.getCommentListSplitFix();
+        List<String> comments = getComment(context);
+
+        if (comments == null) return true;
+
+        if (splitFixComments != null) {
+            return !comments.equals(splitFixComments);
+        }
+
+        return false;
     }
-
-    @Override
-    public void setDefault(String location, Object data, List<String> comments, List<String> inlineComments) {
-        configuration.set(location, data);
-        configuration.setComments(location, comments);
-        configuration.setInlineComments(location, inlineComments);
-    }
-
-    @Override
-    public void setDefaultSection(String location, List<String> comments, List<String> inlineComments) {
-        if (!configuration.isConfigurationSection(location)) configuration.createSection(location);
-
-        configuration.setComments(location, comments);
-        configuration.setInlineComments(location, inlineComments);
-    }
-
-    @Override
-    public List<String> getHeader() {
-        return configuration.options().getHeader();
-    }
-
-    @Override
-    public void setHeader(List<String> header) {
-        configuration.options().setHeader(header);
-    }
-
-    @Override
-    public List<String> getFooter() {
-        return configuration.options().getFooter();
-    }
-
-    @Override
-    public void setFooter(List<String> footer) {
-        configuration.options().setFooter(footer);
-    }
-
 }

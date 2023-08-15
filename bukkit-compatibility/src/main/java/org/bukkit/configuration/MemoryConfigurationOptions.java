@@ -2,7 +2,7 @@ package org.bukkit.configuration;
 
 import org.jetbrains.annotations.NotNull;
 
-/** Property of Bukkit (Stored here, due to api changes in older versions.)
+/**
  * Various settings for controlling the input and output of a {@link
  * MemoryConfiguration}
  */

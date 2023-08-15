@@ -1,5 +1,20 @@
 package org.bukkit.configuration.serialization;
 
+import com.google.common.base.Preconditions;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.Location;
+import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.block.banner.Pattern;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.util.BlockVector;
+import org.bukkit.util.BoundingBox;
+import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -8,18 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.lang.Validate;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.Location;
-import org.bukkit.block.banner.Pattern;
-import org.bukkit.configuration.Configuration;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.util.BlockVector;
-import org.bukkit.util.Vector;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Utility class for storing and retrieving classes for {@link Configuration}.
@@ -38,11 +41,8 @@ public class ConfigurationSerialization {
         registerClass(FireworkEffect.class);
         registerClass(Pattern.class);
         registerClass(Location.class);
-
-        try { //use to give higher compatibility
-            registerClass(org.bukkit.attribute.AttributeModifier.class);
-            registerClass(org.bukkit.util.BoundingBox.class);
-        }catch (Exception ignored) {} //assume classes are not present in version and ignore.
+        registerClass(AttributeModifier.class);
+        registerClass(BoundingBox.class);
     }
 
     protected ConfigurationSerialization(@NotNull Class<? extends ConfigurationSerializable> clazz) {
@@ -116,7 +116,7 @@ public class ConfigurationSerialization {
 
     @Nullable
     public ConfigurationSerializable deserialize(@NotNull Map<String, ?> args) {
-        Validate.notNull(args, "Args must not be null");
+        Preconditions.checkArgument(args != null, "Args must not be null");
 
         ConfigurationSerializable result = null;
         Method method = null;

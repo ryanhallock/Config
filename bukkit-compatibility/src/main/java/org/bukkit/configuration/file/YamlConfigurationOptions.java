@@ -1,12 +1,12 @@
 package org.bukkit.configuration.file;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-/** Property of Bukkit (Stored here, due to api changes in older versions.)
+/**
  * Various settings for controlling the input and output of a {@link
  * YamlConfiguration}
  */
@@ -75,7 +75,7 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
         return this;
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets how much spaces should be used to indent each line.
      * <p>
      * The minimum value this may be is 2, and the maximum is 9.
@@ -86,7 +86,7 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
         return indent;
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Sets how much spaces should be used to indent each line.
      * <p>
      * The minimum value this may be is 2, and the maximum is 9.
@@ -96,14 +96,14 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
      */
     @NotNull
     public YamlConfigurationOptions indent(int value) {
-        Validate.isTrue(value >= 2, "Indent must be at least 2 characters");
-        Validate.isTrue(value <= 9, "Indent cannot be greater than 9 characters");
+        Preconditions.checkArgument(value >= 2, "Indent must be at least 2 characters");
+        Preconditions.checkArgument(value <= 9, "Indent cannot be greater than 9 characters");
 
         this.indent = value;
         return this;
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets how long a line can be, before it gets split.
      *
      * @return How the max line width
@@ -112,7 +112,7 @@ public class YamlConfigurationOptions extends FileConfigurationOptions {
         return width;
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Sets how long a line can be, before it gets split.
      *
      * @param value New width

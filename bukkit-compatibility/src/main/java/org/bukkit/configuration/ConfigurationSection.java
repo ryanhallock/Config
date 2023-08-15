@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/** Property of Bukkit (Stored here, due to api changes in older versions.)
+/**
  * Represents a section of a {@link Configuration}
  */
 public interface ConfigurationSection {
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets a set containing all keys in this section.
      * <p>
      * If deep is set to true, then this will contain all the keys within any
@@ -35,7 +35,7 @@ public interface ConfigurationSection {
     @NotNull
     public Set<String> getKeys(boolean deep);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets a Map containing all keys and their values for this section.
      * <p>
      * If deep is set to true, then this will contain all the keys and values
@@ -52,7 +52,7 @@ public interface ConfigurationSection {
     @NotNull
     public Map<String, Object> getValues(boolean deep);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Checks if this {@link ConfigurationSection} contains the given path.
      * <p>
      * If the value for the requested path does not exist but a default value
@@ -65,7 +65,7 @@ public interface ConfigurationSection {
      */
     public boolean contains(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Checks if this {@link ConfigurationSection} contains the given path.
      * <p>
      * If the value for the requested path does not exist, the boolean parameter
@@ -84,7 +84,7 @@ public interface ConfigurationSection {
      */
     public boolean contains(@NotNull String path, boolean ignoreDefault);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Checks if this {@link ConfigurationSection} has a value set for the
      * given path.
      * <p>
@@ -98,7 +98,7 @@ public interface ConfigurationSection {
      */
     public boolean isSet(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the path of this {@link ConfigurationSection} from its root {@link
      * Configuration}
      * <p>
@@ -116,7 +116,7 @@ public interface ConfigurationSection {
     @Nullable
     public String getCurrentPath();
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the name of this individual {@link ConfigurationSection}, in the
      * path.
      * <p>
@@ -128,7 +128,7 @@ public interface ConfigurationSection {
     @NotNull
     public String getName();
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the root {@link Configuration} that contains this {@link
      * ConfigurationSection}
      * <p>
@@ -143,7 +143,7 @@ public interface ConfigurationSection {
     @Nullable
     public Configuration getRoot();
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the parent {@link ConfigurationSection} that directly contains
      * this {@link ConfigurationSection}.
      * <p>
@@ -157,7 +157,7 @@ public interface ConfigurationSection {
     @Nullable
     public ConfigurationSection getParent();
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested Object by path.
      * <p>
      * If the Object does not exist but a default value has been specified,
@@ -170,7 +170,7 @@ public interface ConfigurationSection {
     @Nullable
     public Object get(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested Object by path, returning a default value if not
      * found.
      * <p>
@@ -186,7 +186,7 @@ public interface ConfigurationSection {
     @Nullable
     public Object get(@NotNull String path, @Nullable Object def);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Sets the specified path to the given value.
      * <p>
      * If value is null, the entry will be removed. Any existing entry will be
@@ -195,14 +195,14 @@ public interface ConfigurationSection {
      * Some implementations may have limitations on what you may store. See
      * their individual javadocs for details. No implementations should allow
      * you to store {@link Configuration}s or {@link ConfigurationSection}s,
-     * please use {@link #createSection(String)} for that.
+     * please use {@link #createSection(java.lang.String)} for that.
      *
      * @param path Path of the object to set.
      * @param value New value to set the path to.
      */
     public void set(@NotNull String path, @Nullable Object value);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Creates an empty {@link ConfigurationSection} at the specified path.
      * <p>
      * Any value that was previously set at this path will be overwritten. If
@@ -215,7 +215,7 @@ public interface ConfigurationSection {
     @NotNull
     public ConfigurationSection createSection(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Creates a {@link ConfigurationSection} at the specified path, with
      * specified values.
      * <p>
@@ -231,7 +231,8 @@ public interface ConfigurationSection {
     public ConfigurationSection createSection(@NotNull String path, @NotNull Map<?, ?> map);
 
     // Primitives
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+
+    /**
      * Gets the requested String by path.
      * <p>
      * If the String does not exist but a default value has been specified,
@@ -244,7 +245,7 @@ public interface ConfigurationSection {
     @Nullable
     public String getString(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested String by path, returning a default value if not
      * found.
      * <p>
@@ -261,7 +262,7 @@ public interface ConfigurationSection {
     @Nullable
     public String getString(@NotNull String path, @Nullable String def);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Checks if the specified path is a String.
      * <p>
      * If the path exists but is not a String, this will return false. If the
@@ -274,7 +275,7 @@ public interface ConfigurationSection {
      */
     public boolean isString(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested int by path.
      * <p>
      * If the int does not exist but a default value has been specified, this
@@ -286,7 +287,7 @@ public interface ConfigurationSection {
      */
     public int getInt(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested int by path, returning a default value if not found.
      * <p>
      * If the int does not exist then the specified default value will
@@ -300,7 +301,7 @@ public interface ConfigurationSection {
      */
     public int getInt(@NotNull String path, int def);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Checks if the specified path is an int.
      * <p>
      * If the path exists but is not a int, this will return false. If the
@@ -313,7 +314,7 @@ public interface ConfigurationSection {
      */
     public boolean isInt(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested boolean by path.
      * <p>
      * If the boolean does not exist but a default value has been specified,
@@ -325,7 +326,7 @@ public interface ConfigurationSection {
      */
     public boolean getBoolean(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested boolean by path, returning a default value if not
      * found.
      * <p>
@@ -340,7 +341,7 @@ public interface ConfigurationSection {
      */
     public boolean getBoolean(@NotNull String path, boolean def);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Checks if the specified path is a boolean.
      * <p>
      * If the path exists but is not a boolean, this will return false. If the
@@ -353,7 +354,7 @@ public interface ConfigurationSection {
      */
     public boolean isBoolean(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested double by path.
      * <p>
      * If the double does not exist but a default value has been specified,
@@ -365,7 +366,7 @@ public interface ConfigurationSection {
      */
     public double getDouble(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested double by path, returning a default value if not
      * found.
      * <p>
@@ -380,7 +381,7 @@ public interface ConfigurationSection {
      */
     public double getDouble(@NotNull String path, double def);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Checks if the specified path is a double.
      * <p>
      * If the path exists but is not a double, this will return false. If the
@@ -393,7 +394,7 @@ public interface ConfigurationSection {
      */
     public boolean isDouble(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested long by path.
      * <p>
      * If the long does not exist but a default value has been specified, this
@@ -405,7 +406,7 @@ public interface ConfigurationSection {
      */
     public long getLong(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested long by path, returning a default value if not
      * found.
      * <p>
@@ -420,7 +421,7 @@ public interface ConfigurationSection {
      */
     public long getLong(@NotNull String path, long def);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Checks if the specified path is a long.
      * <p>
      * If the path exists but is not a long, this will return false. If the
@@ -434,7 +435,8 @@ public interface ConfigurationSection {
     public boolean isLong(@NotNull String path);
 
     // Java
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+
+    /**
      * Gets the requested List by path.
      * <p>
      * If the List does not exist but a default value has been specified, this
@@ -447,7 +449,7 @@ public interface ConfigurationSection {
     @Nullable
     public List<?> getList(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested List by path, returning a default value if not
      * found.
      * <p>
@@ -464,7 +466,7 @@ public interface ConfigurationSection {
     @Nullable
     public List<?> getList(@NotNull String path, @Nullable List<?> def);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Checks if the specified path is a List.
      * <p>
      * If the path exists but is not a List, this will return false. If the
@@ -477,7 +479,7 @@ public interface ConfigurationSection {
      */
     public boolean isList(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested List of String by path.
      * <p>
      * If the List does not exist but a default value has been specified, this
@@ -493,7 +495,7 @@ public interface ConfigurationSection {
     @NotNull
     public List<String> getStringList(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested List of Integer by path.
      * <p>
      * If the List does not exist but a default value has been specified, this
@@ -509,7 +511,7 @@ public interface ConfigurationSection {
     @NotNull
     public List<Integer> getIntegerList(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested List of Boolean by path.
      * <p>
      * If the List does not exist but a default value has been specified, this
@@ -525,7 +527,7 @@ public interface ConfigurationSection {
     @NotNull
     public List<Boolean> getBooleanList(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested List of Double by path.
      * <p>
      * If the List does not exist but a default value has been specified, this
@@ -541,7 +543,7 @@ public interface ConfigurationSection {
     @NotNull
     public List<Double> getDoubleList(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested List of Float by path.
      * <p>
      * If the List does not exist but a default value has been specified, this
@@ -557,7 +559,7 @@ public interface ConfigurationSection {
     @NotNull
     public List<Float> getFloatList(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested List of Long by path.
      * <p>
      * If the List does not exist but a default value has been specified, this
@@ -573,7 +575,7 @@ public interface ConfigurationSection {
     @NotNull
     public List<Long> getLongList(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested List of Byte by path.
      * <p>
      * If the List does not exist but a default value has been specified, this
@@ -589,7 +591,7 @@ public interface ConfigurationSection {
     @NotNull
     public List<Byte> getByteList(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested List of Character by path.
      * <p>
      * If the List does not exist but a default value has been specified, this
@@ -605,7 +607,7 @@ public interface ConfigurationSection {
     @NotNull
     public List<Character> getCharacterList(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested List of Short by path.
      * <p>
      * If the List does not exist but a default value has been specified, this
@@ -621,7 +623,7 @@ public interface ConfigurationSection {
     @NotNull
     public List<Short> getShortList(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested List of Maps by path.
      * <p>
      * If the List does not exist but a default value has been specified, this
@@ -638,7 +640,8 @@ public interface ConfigurationSection {
     public List<Map<?, ?>> getMapList(@NotNull String path);
 
     // Bukkit
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+
+    /**
      * Gets the requested object at the given path.
      *
      * If the Object does not exist but a default value has been specified, this
@@ -659,7 +662,7 @@ public interface ConfigurationSection {
     @Nullable
     public <T extends Object> T getObject(@NotNull String path, @NotNull Class<T> clazz);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested object at the given path, returning a default value if
      * not found
      *
@@ -686,7 +689,7 @@ public interface ConfigurationSection {
     @Nullable
     public <T extends Object> T getObject(@NotNull String path, @NotNull Class<T> clazz, @Nullable T def);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested {@link ConfigurationSerializable} object at the given
      * path.
      *
@@ -702,7 +705,7 @@ public interface ConfigurationSection {
     @Nullable
     public <T extends ConfigurationSerializable> T getSerializable(@NotNull String path, @NotNull Class<T> clazz);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested {@link ConfigurationSerializable} object at the given
      * path, returning a default value if not found
      *
@@ -721,7 +724,7 @@ public interface ConfigurationSection {
     @Nullable
     public <T extends ConfigurationSerializable> T getSerializable(@NotNull String path, @NotNull Class<T> clazz, @Nullable T def);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested Vector by path.
      * <p>
      * If the Vector does not exist but a default value has been specified,
@@ -734,7 +737,7 @@ public interface ConfigurationSection {
     @Nullable
     public Vector getVector(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested {@link Vector} by path, returning a default value if
      * not found.
      * <p>
@@ -751,7 +754,7 @@ public interface ConfigurationSection {
     @Nullable
     public Vector getVector(@NotNull String path, @Nullable Vector def);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Checks if the specified path is a Vector.
      * <p>
      * If the path exists but is not a Vector, this will return false. If the
@@ -764,7 +767,7 @@ public interface ConfigurationSection {
      */
     public boolean isVector(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested OfflinePlayer by path.
      * <p>
      * If the OfflinePlayer does not exist but a default value has been
@@ -778,7 +781,7 @@ public interface ConfigurationSection {
     @Nullable
     public OfflinePlayer getOfflinePlayer(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested {@link OfflinePlayer} by path, returning a default
      * value if not found.
      * <p>
@@ -795,7 +798,7 @@ public interface ConfigurationSection {
     @Nullable
     public OfflinePlayer getOfflinePlayer(@NotNull String path, @Nullable OfflinePlayer def);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Checks if the specified path is an OfflinePlayer.
      * <p>
      * If the path exists but is not a OfflinePlayer, this will return false.
@@ -808,7 +811,7 @@ public interface ConfigurationSection {
      */
     public boolean isOfflinePlayer(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested ItemStack by path.
      * <p>
      * If the ItemStack does not exist but a default value has been specified,
@@ -821,7 +824,7 @@ public interface ConfigurationSection {
     @Nullable
     public ItemStack getItemStack(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested {@link ItemStack} by path, returning a default value
      * if not found.
      * <p>
@@ -838,7 +841,7 @@ public interface ConfigurationSection {
     @Nullable
     public ItemStack getItemStack(@NotNull String path, @Nullable ItemStack def);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Checks if the specified path is an ItemStack.
      * <p>
      * If the path exists but is not a ItemStack, this will return false. If
@@ -851,7 +854,7 @@ public interface ConfigurationSection {
      */
     public boolean isItemStack(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested Color by path.
      * <p>
      * If the Color does not exist but a default value has been specified,
@@ -864,7 +867,7 @@ public interface ConfigurationSection {
     @Nullable
     public Color getColor(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested {@link Color} by path, returning a default value if
      * not found.
      * <p>
@@ -881,7 +884,7 @@ public interface ConfigurationSection {
     @Nullable
     public Color getColor(@NotNull String path, @Nullable Color def);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Checks if the specified path is a Color.
      * <p>
      * If the path exists but is not a Color, this will return false. If the
@@ -894,7 +897,7 @@ public interface ConfigurationSection {
      */
     public boolean isColor(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested Location by path.
      * <p>
      * If the Location does not exist but a default value has been specified,
@@ -907,7 +910,7 @@ public interface ConfigurationSection {
     @Nullable
     public Location getLocation(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested {@link Location} by path, returning a default value if
      * not found.
      * <p>
@@ -924,7 +927,7 @@ public interface ConfigurationSection {
     @Nullable
     public Location getLocation(@NotNull String path, @Nullable Location def);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Checks if the specified path is a Location.
      * <p>
      * If the path exists but is not a Location, this will return false. If the
@@ -937,7 +940,7 @@ public interface ConfigurationSection {
      */
     public boolean isLocation(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested ConfigurationSection by path.
      * <p>
      * If the ConfigurationSection does not exist but a default value has been
@@ -951,7 +954,7 @@ public interface ConfigurationSection {
     @Nullable
     public ConfigurationSection getConfigurationSection(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Checks if the specified path is a ConfigurationSection.
      * <p>
      * If the path exists but is not a ConfigurationSection, this will return
@@ -965,7 +968,7 @@ public interface ConfigurationSection {
      */
     public boolean isConfigurationSection(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the equivalent {@link ConfigurationSection} from the default
      * {@link Configuration} defined in {@link #getRoot()}.
      * <p>
@@ -978,7 +981,7 @@ public interface ConfigurationSection {
     @Nullable
     public ConfigurationSection getDefaultSection();
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Sets the default value in the root at the given path as provided.
      * <p>
      * If no source {@link Configuration} was provided as a default
@@ -998,7 +1001,7 @@ public interface ConfigurationSection {
      */
     public void addDefault(@NotNull String path, @Nullable Object value);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested comment list by path.
      * <p>
      * If no comments exist, an empty list will be returned. A null entry
@@ -1012,7 +1015,7 @@ public interface ConfigurationSection {
     @NotNull
     public List<String> getComments(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the requested inline comment list by path.
      * <p>
      * If no comments exist, an empty list will be returned. A null entry
@@ -1026,7 +1029,7 @@ public interface ConfigurationSection {
     @NotNull
     public List<String> getInlineComments(@NotNull String path);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Sets the comment list at the specified path.
      * <p>
      * If value is null, the comments will be removed. A null entry is an empty
@@ -1043,7 +1046,7 @@ public interface ConfigurationSection {
      */
     public void setComments(@NotNull String path, @Nullable List<String> comments);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Sets the inline comment list at the specified path.
      * <p>
      * If value is null, the comments will be removed. A null entry is an empty

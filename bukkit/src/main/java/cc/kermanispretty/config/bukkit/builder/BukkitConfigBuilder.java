@@ -3,19 +3,23 @@ package cc.kermanispretty.config.bukkit.builder;
 import cc.kermanispretty.config.bukkit.BukkitConfig;
 import cc.kermanispretty.config.bukkit.BukkitConfigHandler;
 import cc.kermanispretty.config.common.ConfigHandler;
-import cc.kermanispretty.config.common.ConfigOptions;
+import cc.kermanispretty.config.common.ConfigOptionEnum;
+import cc.kermanispretty.config.common.transform.TransformerHandler;
 import cc.kermanispretty.config.common.validation.ValidationHandler;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.lang.annotation.Annotation;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashSet;
 
 public class BukkitConfigBuilder {
     private String path;
     private String fileName;
     private ConfigHandler handler;
-    private ValidationHandler validationHandler = ValidationHandler.DEFAULT;
-    private ConfigOptions options = ConfigOptions.DEFAULT;
+    private ValidationHandler validationHandler;
+    private TransformerHandler transformerHandler;
+    private EnumSet<ConfigOptionEnum> options;
     private final HashSet<Object> register = new HashSet<>();
 
     public BukkitConfigBuilder(JavaPlugin plugin, String fileName) {
@@ -42,7 +46,7 @@ public class BukkitConfigBuilder {
         return this;
     }
 
-    public BukkitConfigBuilder options(ConfigOptions options) {
+    public BukkitConfigBuilder options(EnumSet<ConfigOptionEnum> options) {
         this.options = options;
         return this;
     }
@@ -52,7 +56,33 @@ public class BukkitConfigBuilder {
         return this;
     }
 
-    public BukkitConfigBuilder validationHandler(ValidationHandler validationHandler) {
+    public BukkitConfigBuilder registerValidator(Class<? extends Annotation> clazz) {
+        if (validationHandler == null) {
+            validationHandler = new ValidationHandler();
+        }
+
+        validationHandler.register(clazz);
+
+        return this;
+    }
+
+    public BukkitConfigBuilder registerTransformer(Class<? extends Annotation> clazz) {
+        if (transformerHandler == null) {
+            transformerHandler = new TransformerHandler();
+        }
+
+        transformerHandler.register(clazz);
+
+        return this;
+    }
+
+
+    public BukkitConfigBuilder transformer(TransformerHandler transformerHandler) {
+        this.transformerHandler = transformerHandler;
+        return this;
+    }
+
+    public BukkitConfigBuilder validator(ValidationHandler validationHandler) {
         this.validationHandler = validationHandler;
         return this;
     }
@@ -62,19 +92,30 @@ public class BukkitConfigBuilder {
             handler = new BukkitConfigHandler(path, fileName);
         }
 
-        BukkitConfig config = new BukkitConfig(handler, validationHandler, options);
+        if (options == null)
+            options = ConfigOptionEnum.getDefaultOptions();
 
-        config.register(register);
+        if (validationHandler == null)
+            validationHandler = new ValidationHandler();
+
+        if (transformerHandler == null)
+            transformerHandler = new TransformerHandler();
+
+        BukkitConfig config = new BukkitConfig(handler, validationHandler, transformerHandler, options);
+
+        config.register(register.toArray());
 
         return config;
     }
 
-    public BukkitConfig registerAndLoad(Object... objects) {
+    public BukkitConfig buildAndLoad() {
         BukkitConfig config = build();
 
-        config.register(register);
-        config.register(objects);
-        config.load();
+        try {
+            config.load();
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
 
         return config;
     }

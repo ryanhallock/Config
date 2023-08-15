@@ -5,11 +5,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-/** Property of Bukkit (Stored here, due to api changes in older versions.)
+/**
  * Represents a source of configurable options and settings
  */
 public interface Configuration extends ConfigurationSection {
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Sets the default value of the given path as provided.
      * <p>
      * If no source {@link Configuration} was provided as a default
@@ -26,7 +26,7 @@ public interface Configuration extends ConfigurationSection {
     @Override
     public void addDefault(@NotNull String path, @Nullable Object value);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Sets the default values of the given paths as provided.
      * <p>
      * If no source {@link Configuration} was provided as a default
@@ -38,7 +38,7 @@ public interface Configuration extends ConfigurationSection {
      */
     public void addDefaults(@NotNull Map<String, Object> defaults);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Sets the default values of the given paths as provided.
      * <p>
      * If no source {@link Configuration} was provided as a default
@@ -48,25 +48,14 @@ public interface Configuration extends ConfigurationSection {
      * This method will not hold a reference to the specified Configuration,
      * nor will it automatically update if that Configuration ever changes. If
      * you require this, you should set the default source with {@link
-     * #setDefaults(Configuration)}.
+     * #setDefaults(org.bukkit.configuration.Configuration)}.
      *
      * @param defaults A configuration holding a list of defaults to copy.
      * @throws IllegalArgumentException Thrown if defaults is null or this.
      */
     public void addDefaults(@NotNull Configuration defaults);
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
-     * Sets the source of all default values for this {@link Configuration}.
-     * <p>
-     * If a previous source was set, or previous default values were defined,
-     * then they will not be copied to the new source.
-     *
-     * @param defaults New source of default values for this configuration.
-     * @throws IllegalArgumentException Thrown if defaults is null or this.
-     */
-    public void setDefaults(@NotNull Configuration defaults);
-
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the source {@link Configuration} for this configuration.
      * <p>
      * If no configuration source was set, but default values were added, then
@@ -78,7 +67,18 @@ public interface Configuration extends ConfigurationSection {
     @Nullable
     public Configuration getDefaults();
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
+     * Sets the source of all default values for this {@link Configuration}.
+     * <p>
+     * If a previous source was set, or previous default values were defined,
+     * then they will not be copied to the new source.
+     *
+     * @param defaults New source of default values for this configuration.
+     * @throws IllegalArgumentException Thrown if defaults is null or this.
+     */
+    public void setDefaults(@NotNull Configuration defaults);
+
+    /**
      * Gets the {@link ConfigurationOptions} for this {@link Configuration}.
      * <p>
      * All setters through this method are chainable.

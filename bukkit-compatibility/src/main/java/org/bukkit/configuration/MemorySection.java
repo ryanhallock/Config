@@ -1,6 +1,7 @@
 package org.bukkit.configuration;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -15,7 +16,7 @@ import java.util.*;
 
 import static org.bukkit.util.NumberConversions.*;
 
-/** Property of Bukkit (Stored here, due to api changes in older versions.)
+/**
  * A type of {@link ConfigurationSection} that is stored in memory.
  */
 public class MemorySection implements ConfigurationSection {
@@ -25,7 +26,7 @@ public class MemorySection implements ConfigurationSection {
     private final String path;
     private final String fullPath;
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Creates an empty MemorySection for use as a root {@link Configuration}
      * section.
      * <p>
@@ -46,7 +47,7 @@ public class MemorySection implements ConfigurationSection {
         this.root = (Configuration) this;
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Creates an empty MemorySection with the specified parent and path.
      *
      * @param parent Parent section that contains this own section.
@@ -56,14 +57,14 @@ public class MemorySection implements ConfigurationSection {
      *     if parent contains no root Configuration.
      */
     protected MemorySection(@NotNull ConfigurationSection parent, @NotNull String path) {
-        Validate.notNull(parent, "Parent cannot be null");
-        Validate.notNull(path, "Path cannot be null");
+        Preconditions.checkArgument(parent != null, "Parent cannot be null");
+        Preconditions.checkArgument(path != null, "Path cannot be null");
 
         this.path = path;
         this.parent = parent;
         this.root = parent.getRoot();
 
-        Validate.notNull(root, "Path cannot be orphaned");
+        Preconditions.checkArgument(root != null, "Path cannot be orphaned");
 
         this.fullPath = createPath(parent, path);
     }
@@ -152,18 +153,20 @@ public class MemorySection implements ConfigurationSection {
         return parent;
     }
 
-    @Override
-    public void addDefault(@NotNull String path, @Nullable Object value) {
-        Validate.notNull(path, "Path cannot be null");
-
-        Configuration root = getRoot();
-        if (root == null) {
-            throw new IllegalStateException("Cannot add default without root");
-        }
-        if (root == this) {
-            throw new UnsupportedOperationException("Unsupported addDefault(String, Object) implementation");
-        }
-        root.addDefault(createPath(this, path), value);
+    /**
+     * Creates a full path to the given {@link ConfigurationSection} from its
+     * root {@link Configuration}.
+     * <p>
+     * You may use this method for any given {@link ConfigurationSection}, not
+     * only {@link MemorySection}.
+     *
+     * @param section Section to create a path for.
+     * @param key Name of the specified section.
+     * @return Full path of the section from its root.
+     */
+    @NotNull
+    public static String createPath(@NotNull ConfigurationSection section, @Nullable String key) {
+        return createPath(section, key, (section == null) ? null : section.getRoot());
     }
 
     @Override
@@ -181,9 +184,69 @@ public class MemorySection implements ConfigurationSection {
         return null;
     }
 
+    /**
+     * Creates a relative path to the given {@link ConfigurationSection} from
+     * the given relative section.
+     * <p>
+     * You may use this method for any given {@link ConfigurationSection}, not
+     * only {@link MemorySection}.
+     *
+     * @param section Section to create a path for.
+     * @param key Name of the specified section.
+     * @param relativeTo Section to create the path relative to.
+     * @return Full path of the section from its root.
+     */
+    @NotNull
+    public static String createPath(@NotNull ConfigurationSection section, @Nullable String key, @Nullable ConfigurationSection relativeTo) {
+        Preconditions.checkArgument(section != null, "Cannot create path without a section");
+        Configuration root = section.getRoot();
+        if (root == null) {
+            throw new IllegalStateException("Cannot create path without a root");
+        }
+        char separator = root.options().pathSeparator();
+
+        StringBuilder builder = new StringBuilder();
+        for (ConfigurationSection parent = section; (parent != null) && (parent != relativeTo); parent = parent.getParent()) {
+            if (builder.length() > 0) {
+                builder.insert(0, separator);
+            }
+            builder.insert(0, parent.getName());
+        }
+
+        if ((key != null) && (key.length() > 0)) {
+            if (builder.length() > 0) {
+                builder.append(separator);
+            }
+
+            builder.append(key);
+        }
+
+        return builder.toString();
+    }
+
+    @Override
+    @Nullable
+    public Object get(@NotNull String path) {
+        return get(path, getDefault(path));
+    }
+
+    @Override
+    public void addDefault(@NotNull String path, @Nullable Object value) {
+        Preconditions.checkArgument(path != null, "Path cannot be null");
+
+        Configuration root = getRoot();
+        if (root == null) {
+            throw new IllegalStateException("Cannot add default without root");
+        }
+        if (root == this) {
+            throw new UnsupportedOperationException("Unsupported addDefault(String, Object) implementation");
+        }
+        root.addDefault(createPath(this, path), value);
+    }
+
     @Override
     public void set(@NotNull String path, @Nullable Object value) {
-        Validate.notEmpty(path, "Cannot set to an empty path");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(path), "Cannot set to an empty path");
 
         Configuration root = getRoot();
         if (root == null) {
@@ -224,84 +287,6 @@ public class MemorySection implements ConfigurationSection {
         } else {
             section.set(key, value);
         }
-    }
-
-    @Override
-    @Nullable
-    public Object get(@NotNull String path) {
-        return get(path, getDefault(path));
-    }
-
-    @Override
-    @Contract("_, !null -> !null")
-    @Nullable
-    public Object get(@NotNull String path, @Nullable Object def) {
-        Validate.notNull(path, "Path cannot be null");
-
-        if (path.length() == 0) {
-            return this;
-        }
-
-        Configuration root = getRoot();
-        if (root == null) {
-            throw new IllegalStateException("Cannot access section without a root");
-        }
-
-        final char separator = root.options().pathSeparator();
-        // i1 is the leading (higher) index
-        // i2 is the trailing (lower) index
-        int i1 = -1, i2;
-        ConfigurationSection section = this;
-        while ((i1 = path.indexOf(separator, i2 = i1 + 1)) != -1) {
-            final String currentPath = path.substring(i2, i1);
-            if (!section.contains(currentPath, true)) {
-                return def;
-            }
-            section = section.getConfigurationSection(currentPath);
-            if (section == null) {
-                return def;
-            }
-        }
-
-        String key = path.substring(i2);
-        if (section == this) {
-            SectionPathData result = map.get(key);
-            return (result == null) ? def : result.getData();
-        }
-        return section.get(key, def);
-    }
-
-    @Override
-    @NotNull
-    public ConfigurationSection createSection(@NotNull String path) {
-        Validate.notEmpty(path, "Cannot create section at empty path");
-        Configuration root = getRoot();
-        if (root == null) {
-            throw new IllegalStateException("Cannot create section without a root");
-        }
-
-        final char separator = root.options().pathSeparator();
-        // i1 is the leading (higher) index
-        // i2 is the trailing (lower) index
-        int i1 = -1, i2;
-        ConfigurationSection section = this;
-        while ((i1 = path.indexOf(separator, i2 = i1 + 1)) != -1) {
-            String node = path.substring(i2, i1);
-            ConfigurationSection subSection = section.getConfigurationSection(node);
-            if (subSection == null) {
-                section = section.createSection(node);
-            } else {
-                section = subSection;
-            }
-        }
-
-        String key = path.substring(i2);
-        if (section == this) {
-            ConfigurationSection result = new MemorySection(this, key);
-            map.put(key, new SectionPathData(result));
-            return result;
-        }
-        return section.createSection(key);
     }
 
     @Override
@@ -703,22 +688,76 @@ public class MemorySection implements ConfigurationSection {
         return result;
     }
 
-    // Bukkit
-    @Nullable
     @Override
-    public <T extends Object> T getObject(@NotNull String path, @NotNull Class<T> clazz) {
-        Validate.notNull(clazz, "Class cannot be null");
-        Object def = getDefault(path);
-        return getObject(path, clazz, (def != null && clazz.isInstance(def)) ? clazz.cast(def) : null);
+    @Contract("_, !null -> !null")
+    @Nullable
+    public Object get(@NotNull String path, @Nullable Object def) {
+        Preconditions.checkArgument(path != null, "Path cannot be null");
+
+        if (path.length() == 0) {
+            return this;
+        }
+
+        Configuration root = getRoot();
+        if (root == null) {
+            throw new IllegalStateException("Cannot access section without a root");
+        }
+
+        final char separator = root.options().pathSeparator();
+        // i1 is the leading (higher) index
+        // i2 is the trailing (lower) index
+        int i1 = -1, i2;
+        ConfigurationSection section = this;
+        while ((i1 = path.indexOf(separator, i2 = i1 + 1)) != -1) {
+            final String currentPath = path.substring(i2, i1);
+            if (!section.contains(currentPath, true)) {
+                return def;
+            }
+            section = section.getConfigurationSection(currentPath);
+            if (section == null) {
+                return def;
+            }
+        }
+
+        String key = path.substring(i2);
+        if (section == this) {
+            SectionPathData result = map.get(key);
+            return (result == null) ? def : result.getData();
+        }
+        return section.get(key, def);
     }
 
-    @Contract("_, _, !null -> !null")
-    @Nullable
     @Override
-    public <T extends Object> T getObject(@NotNull String path, @NotNull Class<T> clazz, @Nullable T def) {
-        Validate.notNull(clazz, "Class cannot be null");
-        Object val = get(path, def);
-        return (val != null && clazz.isInstance(val)) ? clazz.cast(val) : def;
+    @NotNull
+    public ConfigurationSection createSection(@NotNull String path) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(path), "Cannot create section at empty path");
+        Configuration root = getRoot();
+        if (root == null) {
+            throw new IllegalStateException("Cannot create section without a root");
+        }
+
+        final char separator = root.options().pathSeparator();
+        // i1 is the leading (higher) index
+        // i2 is the trailing (lower) index
+        int i1 = -1, i2;
+        ConfigurationSection section = this;
+        while ((i1 = path.indexOf(separator, i2 = i1 + 1)) != -1) {
+            String node = path.substring(i2, i1);
+            ConfigurationSection subSection = section.getConfigurationSection(node);
+            if (subSection == null) {
+                section = section.createSection(node);
+            } else {
+                section = subSection;
+            }
+        }
+
+        String key = path.substring(i2);
+        if (section == this) {
+            ConfigurationSection result = new MemorySection(this, key);
+            map.put(key, new SectionPathData(result));
+            return result;
+        }
+        return section.createSection(key);
     }
 
     @Nullable
@@ -849,13 +888,13 @@ public class MemorySection implements ConfigurationSection {
                 || input instanceof Long || input instanceof Float;
     }
 
+    // Bukkit
     @Nullable
-    protected Object getDefault(@NotNull String path) {
-        Validate.notNull(path, "Path cannot be null");
-
-        Configuration root = getRoot();
-        Configuration defaults = root == null ? null : root.getDefaults();
-        return (defaults == null) ? null : defaults.get(createPath(this, path));
+    @Override
+    public <T extends Object> T getObject(@NotNull String path, @NotNull Class<T> clazz) {
+        Preconditions.checkArgument(clazz != null, "Class cannot be null");
+        Object def = getDefault(path);
+        return getObject(path, clazz, (def != null && clazz.isInstance(def)) ? clazz.cast(def) : null);
     }
 
     protected void mapChildrenKeys(@NotNull Set<String> output, @NotNull ConfigurationSection section, boolean deep) {
@@ -906,60 +945,22 @@ public class MemorySection implements ConfigurationSection {
         }
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
-     * Creates a full path to the given {@link ConfigurationSection} from its
-     * root {@link Configuration}.
-     * <p>
-     * You may use this method for any given {@link ConfigurationSection}, not
-     * only {@link MemorySection}.
-     *
-     * @param section Section to create a path for.
-     * @param key Name of the specified section.
-     * @return Full path of the section from its root.
-     */
-    @NotNull
-    public static String createPath(@NotNull ConfigurationSection section, @Nullable String key) {
-        return createPath(section, key, (section == null) ? null : section.getRoot());
+    @Contract("_, _, !null -> !null")
+    @Nullable
+    @Override
+    public <T extends Object> T getObject(@NotNull String path, @NotNull Class<T> clazz, @Nullable T def) {
+        Preconditions.checkArgument(clazz != null, "Class cannot be null");
+        Object val = get(path, def);
+        return (val != null && clazz.isInstance(val)) ? clazz.cast(val) : def;
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
-     * Creates a relative path to the given {@link ConfigurationSection} from
-     * the given relative section.
-     * <p>
-     * You may use this method for any given {@link ConfigurationSection}, not
-     * only {@link MemorySection}.
-     *
-     * @param section Section to create a path for.
-     * @param key Name of the specified section.
-     * @param relativeTo Section to create the path relative to.
-     * @return Full path of the section from its root.
-     */
-    @NotNull
-    public static String createPath(@NotNull ConfigurationSection section, @Nullable String key, @Nullable ConfigurationSection relativeTo) {
-        Validate.notNull(section, "Cannot create path without a section");
-        Configuration root = section.getRoot();
-        if (root == null) {
-            throw new IllegalStateException("Cannot create path without a root");
-        }
-        char separator = root.options().pathSeparator();
+    @Nullable
+    protected Object getDefault(@NotNull String path) {
+        Preconditions.checkArgument(path != null, "Path cannot be null");
 
-        StringBuilder builder = new StringBuilder();
-        for (ConfigurationSection parent = section; (parent != null) && (parent != relativeTo); parent = parent.getParent()) {
-            if (builder.length() > 0) {
-                builder.insert(0, separator);
-            }
-            builder.insert(0, parent.getName());
-        }
-
-        if ((key != null) && (key.length() > 0)) {
-            if (builder.length() > 0) {
-                builder.append(separator);
-            }
-
-            builder.append(key);
-        }
-
-        return builder.toString();
+        Configuration root = getRoot();
+        Configuration defaults = root == null ? null : root.getDefaults();
+        return (defaults == null) ? null : defaults.get(createPath(this, path));
     }
 
     @Override
@@ -994,7 +995,7 @@ public class MemorySection implements ConfigurationSection {
 
     @Nullable
     private SectionPathData getSectionPathData(@NotNull String path) {
-        Validate.notNull(path, "Path cannot be null");
+        Preconditions.checkArgument(path != null, "Path cannot be null");
 
         Configuration root = getRoot();
         if (root == null) {

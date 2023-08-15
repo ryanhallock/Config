@@ -27,7 +27,7 @@ final class SectionPathData {
         this.data = data;
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * If no comments exist, an empty list will be returned. A null entry in the
      * list represents an empty line and an empty String represents an empty
      * comment line.
@@ -40,7 +40,7 @@ final class SectionPathData {
         return comments;
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Represents the comments on a {@link ConfigurationSection} entry.
      *
      * A null entry in the List is an empty line and an empty String entry is an
@@ -53,7 +53,7 @@ final class SectionPathData {
         this.comments = (comments == null) ? Collections.emptyList() : Collections.unmodifiableList(comments);
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * If no comments exist, an empty list will be returned. A null entry in the
      * list represents an empty line and an empty String represents an empty
      * comment line.
@@ -66,7 +66,7 @@ final class SectionPathData {
         return inlineComments;
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Represents the comments on a {@link ConfigurationSection} entry.
      *
      * A null entry in the List is an empty line and an empty String entry is an

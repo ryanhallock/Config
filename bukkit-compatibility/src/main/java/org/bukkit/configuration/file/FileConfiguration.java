@@ -1,8 +1,8 @@
 package org.bukkit.configuration.file;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Preconditions;
 import com.google.common.io.Files;
-import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.MemoryConfiguration;
@@ -11,20 +11,20 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 
-/** Property of Bukkit (Stored here, due to api changes in older versions.)
+/**
  * This is a base class for all File based implementations of {@link
  * Configuration}
  */
 public abstract class FileConfiguration extends MemoryConfiguration {
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Creates an empty {@link FileConfiguration} with no default values.
      */
     public FileConfiguration() {
         super();
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Creates an empty {@link FileConfiguration} using the specified {@link
      * Configuration} as a source for all default values.
      *
@@ -34,7 +34,7 @@ public abstract class FileConfiguration extends MemoryConfiguration {
         super(defaults);
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Saves this {@link FileConfiguration} to the specified location.
      * <p>
      * If the file does not exist, it will be created. If already exists, it
@@ -50,7 +50,7 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      * @throws IllegalArgumentException Thrown when file is null.
      */
     public void save(@NotNull File file) throws IOException {
-        Validate.notNull(file, "File cannot be null");
+        Preconditions.checkArgument(file != null, "File cannot be null");
 
         Files.createParentDirs(file);
 
@@ -65,7 +65,7 @@ public abstract class FileConfiguration extends MemoryConfiguration {
         }
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Saves this {@link FileConfiguration} to the specified location.
      * <p>
      * If the file does not exist, it will be created. If already exists, it
@@ -81,12 +81,12 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      * @throws IllegalArgumentException Thrown when file is null.
      */
     public void save(@NotNull String file) throws IOException {
-        Validate.notNull(file, "File cannot be null");
+        Preconditions.checkArgument(file != null, "File cannot be null");
 
         save(new File(file));
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Saves this {@link FileConfiguration} to a string, and returns it.
      *
      * @return String containing this configuration.
@@ -94,7 +94,7 @@ public abstract class FileConfiguration extends MemoryConfiguration {
     @NotNull
     public abstract String saveToString();
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Loads this {@link FileConfiguration} from the specified location.
      * <p>
      * All the values contained within this configuration will be removed,
@@ -113,14 +113,14 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      * @throws IllegalArgumentException Thrown when file is null.
      */
     public void load(@NotNull File file) throws FileNotFoundException, IOException, InvalidConfigurationException {
-        Validate.notNull(file, "File cannot be null");
+        Preconditions.checkArgument(file != null, "File cannot be null");
 
         final FileInputStream stream = new FileInputStream(file);
 
         load(new InputStreamReader(stream, Charsets.UTF_8));
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Loads this {@link FileConfiguration} from the specified reader.
      * <p>
      * All the values contained within this configuration will be removed,
@@ -152,7 +152,7 @@ public abstract class FileConfiguration extends MemoryConfiguration {
         loadFromString(builder.toString());
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Loads this {@link FileConfiguration} from the specified location.
      * <p>
      * All the values contained within this configuration will be removed,
@@ -171,12 +171,12 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      * @throws IllegalArgumentException Thrown when file is null.
      */
     public void load(@NotNull String file) throws FileNotFoundException, IOException, InvalidConfigurationException {
-        Validate.notNull(file, "File cannot be null");
+        Preconditions.checkArgument(file != null, "File cannot be null");
 
         load(new File(file));
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Loads this {@link FileConfiguration} from the specified string, as
      * opposed to from file.
      * <p>
@@ -193,7 +193,7 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      */
     public abstract void loadFromString(@NotNull String contents) throws InvalidConfigurationException;
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * @return empty string
      *
      * @deprecated This method only exists for backwards compatibility. It will

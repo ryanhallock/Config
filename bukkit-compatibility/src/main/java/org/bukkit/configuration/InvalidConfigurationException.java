@@ -1,18 +1,18 @@
 package org.bukkit.configuration;
 
-/** Property of Bukkit (Stored here, due to api changes in older versions.)
+/**
  * Exception thrown when attempting to load an invalid {@link Configuration}
  */
 @SuppressWarnings("serial")
 public class InvalidConfigurationException extends Exception {
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Creates a new instance of InvalidConfigurationException without a
      * message or cause.
      */
     public InvalidConfigurationException() {}
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Constructs an instance of InvalidConfigurationException with the
      * specified message.
      *
@@ -22,7 +22,7 @@ public class InvalidConfigurationException extends Exception {
         super(msg);
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Constructs an instance of InvalidConfigurationException with the
      * specified cause.
      *
@@ -32,7 +32,7 @@ public class InvalidConfigurationException extends Exception {
         super(cause);
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Constructs an instance of InvalidConfigurationException with the
      * specified message and cause.
      *

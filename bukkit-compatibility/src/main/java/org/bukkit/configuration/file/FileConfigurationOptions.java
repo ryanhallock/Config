@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/** Property of Bukkit (Stored here, due to api changes in older versions.)
+/**
  * Various settings for controlling the input and output of a {@link
  * FileConfiguration}
  */
@@ -42,7 +42,7 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
         return this;
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the header that will be applied to the top of the saved output.
      * <p>
      * This header will be commented out and applied directly at the top of
@@ -62,22 +62,7 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
         return header;
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
-     * @return The string header.
-     *
-     * @deprecated use getHeader() instead.
-     */
-    @NotNull
-    @Deprecated
-    public String header() {
-        StringBuilder stringHeader = new StringBuilder();
-        for (String line : header) {
-            stringHeader.append(line == null ? "\n" : line + "\n");
-        }
-        return stringHeader.toString();
-    }
-
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Sets the header that will be applied to the top of the saved output.
      * <p>
      * This header will be commented out and applied directly at the top of
@@ -99,7 +84,22 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
         return this;
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
+     * @return The string header.
+     *
+     * @deprecated use getHeader() instead.
+     */
+    @NotNull
+    @Deprecated
+    public String header() {
+        StringBuilder stringHeader = new StringBuilder();
+        for (String line : header) {
+            stringHeader.append(line == null ? "\n" : line + "\n");
+        }
+        return stringHeader.toString();
+    }
+
+    /**
      * @param value The string header.
      * @return This object, for chaining.
      *
@@ -112,7 +112,7 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
         return this;
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets the footer that will be applied to the bottom of the saved output.
      * <p>
      * This footer will be commented out and applied directly at the bottom of
@@ -132,7 +132,7 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
         return footer;
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Sets the footer that will be applied to the bottom of the saved output.
      * <p>
      * This footer will be commented out and applied directly at the bottom of
@@ -154,7 +154,7 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
         return this;
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Gets whether or not comments should be loaded and saved.
      * <p>
      * Defaults to true.
@@ -165,7 +165,7 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
         return parseComments;
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Sets whether or not comments should be loaded and saved.
      * <p>
      * Defaults to true.
@@ -179,7 +179,7 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
         return this;
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * @return Whether or not comments are parsed.
      *
      * @deprecated Call {@link #parseComments()} instead.
@@ -189,7 +189,7 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
         return parseComments;
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * @param value Should comments be parsed.
      * @return This object, for chaining
      *

@@ -1,6 +1,7 @@
 package org.bukkit.configuration.file;
 
-import org.apache.commons.lang.Validate;
+import com.google.common.base.Preconditions;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -21,18 +22,19 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
-/** Property of Bukkit (Stored here, due to api changes in older versions.)
+/**
  * An implementation of {@link Configuration} which saves all files in Yaml.
  * Note that this implementation is not synchronized.
  */
 public class YamlConfiguration extends FileConfiguration {
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * @deprecated unused, not intended to be API
      */
     @Deprecated
     protected static final String COMMENT_PREFIX = "# ";
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * @deprecated unused, not intended to be API
      */
     @Deprecated
@@ -44,16 +46,17 @@ public class YamlConfiguration extends FileConfiguration {
     private final Yaml yaml;
 
     public YamlConfiguration() {
-        constructor = new YamlConstructor();
-        representer = new YamlRepresenter();
-        representer.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-
         yamlDumperOptions = new DumperOptions();
         yamlDumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         yamlLoaderOptions = new LoaderOptions();
         yamlLoaderOptions.setMaxAliasesForCollections(Integer.MAX_VALUE); // SPIGOT-5881: Not ideal, but was default pre SnakeYAML 1.26
+        yamlLoaderOptions.setCodePointLimit(Integer.MAX_VALUE); // SPIGOT-7161: Not ideal, but was default pre SnakeYAML 1.32
 
-        yaml = new BukkitYaml(constructor, representer, yamlDumperOptions, yamlLoaderOptions);
+        constructor = new YamlConstructor(yamlLoaderOptions);
+        representer = new YamlRepresenter(yamlDumperOptions);
+        representer.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+
+        yaml = new Yaml(constructor, representer, yamlDumperOptions, yamlLoaderOptions);
     }
 
     @NotNull
@@ -80,53 +83,63 @@ public class YamlConfiguration extends FileConfiguration {
         return writer.toString();
     }
 
-    @Override
-    public void loadFromString(@NotNull String contents) throws InvalidConfigurationException {
-        Validate.notNull(contents, "String cannot be null");
-        yamlLoaderOptions.setProcessComments(options().parseComments());
+    /**
+     * Creates a new {@link YamlConfiguration}, loading from the given file.
+     * <p>
+     * Any errors loading the Configuration will be logged and then ignored.
+     * If the specified input is not a valid config, a blank config will be
+     * returned.
+     * <p>
+     * The encoding used may follow the system dependent default.
+     *
+     * @param file Input file
+     * @return Resulting configuration
+     * @throws IllegalArgumentException Thrown if file is null
+     */
+    @NotNull
+    public static YamlConfiguration loadConfiguration(@NotNull File file) {
+        Preconditions.checkArgument(file != null, "File cannot be null");
 
-        MappingNode node;
-        try (Reader reader = new UnicodeReader(new ByteArrayInputStream(contents.getBytes(StandardCharsets.UTF_8)))) {
-            node = (MappingNode) yaml.compose(reader);
-        } catch (YAMLException | IOException e) {
-            throw new InvalidConfigurationException(e);
-        } catch (ClassCastException e) {
-            throw new InvalidConfigurationException("Top level is not a Map.");
+        YamlConfiguration config = new YamlConfiguration();
+
+        try {
+            config.load(file);
+        } catch (FileNotFoundException ex) {
+        } catch (IOException ex) {
+            Bukkit.getLogger().log(Level.SEVERE, "Cannot load " + file, ex);
+        } catch (InvalidConfigurationException ex) {
+            Bukkit.getLogger().log(Level.SEVERE, "Cannot load " + file, ex);
         }
 
-        this.map.clear();
-
-        if (node != null) {
-            adjustNodeComments(node);
-            options().setHeader(loadHeader(getCommentLines(node.getBlockComments())));
-            options().setFooter(getCommentLines(node.getEndComments()));
-            fromNodeTree(node, this);
-        }
+        return config;
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
-     * This method splits the header on the last empty line, and sets the
-     * comments below this line as comments for the first key on the map object.
+    /**
+     * Creates a new {@link YamlConfiguration}, loading from the given reader.
+     * <p>
+     * Any errors loading the Configuration will be logged and then ignored.
+     * If the specified input is not a valid config, a blank config will be
+     * returned.
      *
-     * @param node The root node of the yaml object
+     * @param reader input
+     * @return resulting configuration
+     * @throws IllegalArgumentException Thrown if stream is null
      */
-    private void adjustNodeComments(final MappingNode node) {
-        if (node.getBlockComments() == null && !node.getValue().isEmpty()) {
-            Node firstNode = node.getValue().get(0).getKeyNode();
-            List<CommentLine> lines = firstNode.getBlockComments();
-            if (lines != null) {
-                int index = -1;
-                for (int i = 0; i < lines.size(); i++) {
-                    if (lines.get(i).getCommentType() == CommentType.BLANK_LINE) {
-                        index = i;
-                    }
-                }
-                if (index != -1) {
-                    node.setBlockComments(lines.subList(0, index + 1));
-                    firstNode.setBlockComments(lines.subList(index + 1, lines.size()));
-                }
-            }
+    @NotNull
+    public static YamlConfiguration loadConfiguration(@NotNull Reader reader) {
+        Preconditions.checkArgument(reader != null, "Stream cannot be null");
+
+        YamlConfiguration config = new YamlConfiguration();
+
+        try {
+            config.load(reader);
+        } catch (IOException ex) {
+            Bukkit.getLogger().log(Level.SEVERE, "Cannot load configuration from stream", ex);
+        } catch (InvalidConfigurationException ex) {
+            Bukkit.getLogger().log(Level.SEVERE, "Cannot load configuration from stream", ex);
         }
+
+        return config;
     }
 
     private void fromNodeTree(@NotNull MappingNode input, @NotNull ConfigurationSection section) {
@@ -220,7 +233,69 @@ public class YamlConfiguration extends FileConfiguration {
         return lines;
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    @Override
+    public void loadFromString(@NotNull String contents) throws InvalidConfigurationException {
+        Preconditions.checkArgument(contents != null, "Contents cannot be null");
+        yamlLoaderOptions.setProcessComments(options().parseComments());
+
+        MappingNode node;
+        try (Reader reader = new UnicodeReader(new ByteArrayInputStream(contents.getBytes(StandardCharsets.UTF_8)))) {
+            Node rawNode = yaml.compose(reader);
+            try {
+                node = (MappingNode) rawNode;
+            } catch (ClassCastException e) {
+                throw new InvalidConfigurationException("Top level is not a Map.");
+            }
+        } catch (YAMLException | IOException | ClassCastException e) {
+            throw new InvalidConfigurationException(e);
+        }
+
+        this.map.clear();
+
+        if (node != null) {
+            adjustNodeComments(node);
+            options().setHeader(loadHeader(getCommentLines(node.getBlockComments())));
+            options().setFooter(getCommentLines(node.getEndComments()));
+            fromNodeTree(node, this);
+        }
+    }
+
+    /**
+     * This method splits the header on the last empty line, and sets the
+     * comments below this line as comments for the first key on the map object.
+     *
+     * @param node The root node of the yaml object
+     */
+    private void adjustNodeComments(final MappingNode node) {
+        if (node.getBlockComments() == null && !node.getValue().isEmpty()) {
+            Node firstNode = node.getValue().get(0).getKeyNode();
+            List<CommentLine> lines = firstNode.getBlockComments();
+            if (lines != null) {
+                int index = -1;
+                for (int i = 0; i < lines.size(); i++) {
+                    if (lines.get(i).getCommentType() == CommentType.BLANK_LINE) {
+                        index = i;
+                    }
+                }
+                if (index != -1) {
+                    node.setBlockComments(lines.subList(0, index + 1));
+                    firstNode.setBlockComments(lines.subList(index + 1, lines.size()));
+                }
+            }
+        }
+    }
+
+    @NotNull
+    @Override
+    public YamlConfigurationOptions options() {
+        if (options == null) {
+            options = new YamlConfigurationOptions(this);
+        }
+
+        return (YamlConfigurationOptions) options;
+    }
+
+    /**
      * Removes the empty line at the end of the header that separates the header
      * from further comments. Also removes all empty header starts (backwards
      * compat).
@@ -242,7 +317,7 @@ public class YamlConfiguration extends FileConfiguration {
         return list;
     }
 
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
+    /**
      * Adds the empty line at the end of the header that separates the header
      * from further comments.
      *
@@ -257,69 +332,5 @@ public class YamlConfiguration extends FileConfiguration {
         }
 
         return list;
-    }
-
-    @NotNull
-    @Override
-    public YamlConfigurationOptions options() {
-        if (options == null) {
-            options = new YamlConfigurationOptions(this);
-        }
-
-        return (YamlConfigurationOptions) options;
-    }
-
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
-     * Creates a new {@link YamlConfiguration}, loading from the given file.
-     * <p>
-     * Any errors loading the Configuration will be logged and then ignored.
-     * If the specified input is not a valid config, a blank config will be
-     * returned.
-     * <p>
-     * The encoding used may follow the system dependent default.
-     *
-     * @param file Input file
-     * @return Resulting configuration
-     * @throws IllegalArgumentException Thrown if file is null
-     */
-    @NotNull
-    public static YamlConfiguration loadConfiguration(@NotNull File file) {
-        Validate.notNull(file, "File cannot be null");
-
-        YamlConfiguration config = new YamlConfiguration();
-
-        try {
-            config.load(file);
-        } catch (FileNotFoundException ex) {}
-        catch (IOException ex) {}
-        catch (InvalidConfigurationException ex)
-        {}
-
-        return config;
-    }
-
-    /** Property of Bukkit (Stored here, due to api changes in older versions.)
-     * Creates a new {@link YamlConfiguration}, loading from the given reader.
-     * <p>
-     * Any errors loading the Configuration will be logged and then ignored.
-     * If the specified input is not a valid config, a blank config will be
-     * returned.
-     *
-     * @param reader input
-     * @return resulting configuration
-     * @throws IllegalArgumentException Thrown if stream is null
-     */
-    @NotNull
-    public static YamlConfiguration loadConfiguration(@NotNull Reader reader) {
-        Validate.notNull(reader, "Stream cannot be null");
-
-        YamlConfiguration config = new YamlConfiguration();
-
-        try {
-            config.load(reader);
-        } catch (IOException ex) {
-        } catch (InvalidConfigurationException ex) {}
-
-        return config;
     }
 }
