@@ -25,9 +25,10 @@ public class ConfigTest extends JavaPlugin {
     })
     //We can call this field for our config value after load
     private String test = "weTestingstuff"; // default value "weTestingStuff"
-    // Sections are divided up to. 
-    // (Interface Class -> Super Class -> Declaring Class -> Class -> Field)
 
+    // If you added a @Configurable annotation to the parent class it would 
+    // -search all parents in this reversed and sort them to.
+    // (Interface Class -> Super Class -> Declaring Class -> Class -> Field)
     private BukkitConfig config; // our config instance		
 
     @Override  // Enable the plugin
@@ -37,6 +38,19 @@ public class ConfigTest extends JavaPlugin {
                 .buildAndLoad();  // build and load the config
     }
 }
+```
+
+### Produces
+
+```yaml
+# Test Header
+
+# This is a test config for configtest
+configTest:
+  # This is comment test
+  # This is second comment test
+  test: weTestingstuff # This is inline test
+# Test Footer
 ```
 
 # Example transformer
