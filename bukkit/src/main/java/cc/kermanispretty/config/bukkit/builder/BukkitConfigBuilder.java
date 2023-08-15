@@ -58,7 +58,7 @@ public class BukkitConfigBuilder {
 
     public BukkitConfigBuilder registerValidator(Class<? extends Annotation> clazz) {
         if (validationHandler == null) {
-            validationHandler = new ValidationHandler();
+            validationHandler = new ValidationHandler(ValidationHandler.DEFAULT_IMPL);
         }
 
         validationHandler.register(clazz);
@@ -96,7 +96,7 @@ public class BukkitConfigBuilder {
             options = ConfigOptionEnum.getDefaultOptions();
 
         if (validationHandler == null)
-            validationHandler = new ValidationHandler();
+            validationHandler = new ValidationHandler(ValidationHandler.DEFAULT_IMPL);
 
         if (transformerHandler == null)
             transformerHandler = new TransformerHandler();
