@@ -1,6 +1,7 @@
 package cc.kermanispretty.config.common;
 
 import cc.kermanispretty.config.common.annotation.Configurable;
+import cc.kermanispretty.config.common.location.ConfigurablePrefix;
 import cc.kermanispretty.config.common.reflection.context.CommentContext;
 import cc.kermanispretty.config.common.reflection.context.FieldContext;
 import cc.kermanispretty.config.common.reflection.context.LocationContext;
@@ -64,7 +65,11 @@ public abstract class Config {
             });
 
             //Use the previous hierarchy to process fields.
-            String prefix = AnnotationLocationProcessor.process(classHierarchyCopy, separator);
+            StringBuilder prefix = new StringBuilder(AnnotationLocationProcessor.process(classHierarchy, separator));
+
+            if (!isClass && instance instanceof ConfigurablePrefix)
+                prefix.append(separator)
+                        .append(((ConfigurablePrefix) instance).getConfigurablePrefix());
 
             Stream<Field> configurableFields = Arrays.stream(owningClass.getDeclaredFields())
                     .filter(field -> field.isAnnotationPresent(Configurable.class));

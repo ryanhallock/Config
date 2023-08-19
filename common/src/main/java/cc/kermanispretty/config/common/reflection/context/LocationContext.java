@@ -9,7 +9,6 @@ public abstract class LocationContext {
         this.instance = instance;
     }
 
-
     public Class<?> getOwningClass() {
         return instance.getClass();
     }
