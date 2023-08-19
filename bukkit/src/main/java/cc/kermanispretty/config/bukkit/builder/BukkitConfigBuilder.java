@@ -2,6 +2,7 @@ package cc.kermanispretty.config.bukkit.builder;
 
 import cc.kermanispretty.config.bukkit.BukkitConfig;
 import cc.kermanispretty.config.bukkit.BukkitConfigHandler;
+import cc.kermanispretty.config.bukkit.transformer.annotation.Colored;
 import cc.kermanispretty.config.common.ConfigHandler;
 import cc.kermanispretty.config.common.ConfigOptionEnum;
 import cc.kermanispretty.config.common.transform.TransformerHandler;
@@ -68,7 +69,7 @@ public class BukkitConfigBuilder {
 
     public BukkitConfigBuilder registerTransformer(Class<? extends Annotation> clazz) {
         if (transformerHandler == null) {
-            transformerHandler = new TransformerHandler();
+            transformerHandler = new TransformerHandler(Colored.class);
         }
 
         transformerHandler.register(clazz);
@@ -99,7 +100,7 @@ public class BukkitConfigBuilder {
             validationHandler = new ValidationHandler(ValidationHandler.DEFAULT_IMPL);
 
         if (transformerHandler == null)
-            transformerHandler = new TransformerHandler();
+            transformerHandler = new TransformerHandler(Colored.class);
 
         BukkitConfig config = new BukkitConfig(handler, validationHandler, transformerHandler, options);
 
