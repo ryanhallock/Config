@@ -6,7 +6,7 @@ import cc.kermanispretty.config.common.transform.exepctions.InvalidTransformExpe
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
-public interface Transformer<T, U, V extends Annotation> {
+public interface Transformer<T, V extends Annotation, R> {
 
     /**
      * Transforms the given object. If the object is not valid, an exception is thrown.
@@ -18,5 +18,5 @@ public interface Transformer<T, U, V extends Annotation> {
      * @return The transformed object. in U type
      * @throws InvalidTransformExpectation If the object is not able to be transformed
      */
-    U transform(Field field, T object, V annotation, Config config) throws InvalidTransformExpectation;
+    R transform(Field field, T object, V annotation, Config config) throws InvalidTransformExpectation;
 }

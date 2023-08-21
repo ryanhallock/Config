@@ -6,7 +6,7 @@ import cc.kermanispretty.config.bukkit.transformer.annotation.Colored;
 import cc.kermanispretty.config.common.ConfigHandler;
 import cc.kermanispretty.config.common.ConfigOptionEnum;
 import cc.kermanispretty.config.common.transform.TransformerHandler;
-import cc.kermanispretty.config.common.validation.ValidationHandler;
+import cc.kermanispretty.config.common.validation.ValidatorHandler;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.annotation.Annotation;
@@ -18,7 +18,7 @@ public class BukkitConfigBuilder {
     private String path;
     private String fileName;
     private ConfigHandler handler;
-    private ValidationHandler validationHandler;
+    private ValidatorHandler validatorHandler;
     private TransformerHandler transformerHandler;
     private EnumSet<ConfigOptionEnum> options;
     private final HashSet<Object> register = new HashSet<>();
@@ -58,11 +58,11 @@ public class BukkitConfigBuilder {
     }
 
     public BukkitConfigBuilder registerValidator(Class<? extends Annotation> clazz) {
-        if (validationHandler == null) {
-            validationHandler = new ValidationHandler(ValidationHandler.DEFAULT_IMPL);
+        if (validatorHandler == null) {
+            validatorHandler = new ValidatorHandler(ValidatorHandler.DEFAULT_IMPL);
         }
 
-        validationHandler.register(clazz);
+        validatorHandler.register(clazz);
 
         return this;
     }
@@ -83,8 +83,8 @@ public class BukkitConfigBuilder {
         return this;
     }
 
-    public BukkitConfigBuilder validator(ValidationHandler validationHandler) {
-        this.validationHandler = validationHandler;
+    public BukkitConfigBuilder validator(ValidatorHandler validatorHandler) {
+        this.validatorHandler = validatorHandler;
         return this;
     }
 
@@ -96,13 +96,13 @@ public class BukkitConfigBuilder {
         if (options == null)
             options = ConfigOptionEnum.getDefaultOptions();
 
-        if (validationHandler == null)
-            validationHandler = new ValidationHandler(ValidationHandler.DEFAULT_IMPL);
+        if (validatorHandler == null)
+            validatorHandler = new ValidatorHandler(ValidatorHandler.DEFAULT_IMPL);
 
         if (transformerHandler == null)
             transformerHandler = new TransformerHandler(Colored.class);
 
-        BukkitConfig config = new BukkitConfig(handler, validationHandler, transformerHandler, options);
+        BukkitConfig config = new BukkitConfig(handler, validatorHandler, transformerHandler, options);
 
         config.register(register.toArray());
 

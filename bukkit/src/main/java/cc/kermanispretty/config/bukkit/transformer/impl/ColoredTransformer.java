@@ -9,7 +9,7 @@ import org.bukkit.ChatColor;
 import java.lang.reflect.Field;
 import java.util.List;
 
-public class ColoredTransformer implements Transformer<Object, Object, Colored> {
+public class ColoredTransformer implements Transformer<Object, Colored, Object> {
     @Override
     @SuppressWarnings("unchecked")
     public Object transform(Field field, Object object, Colored annotation, Config config) throws InvalidTransformExpectation {

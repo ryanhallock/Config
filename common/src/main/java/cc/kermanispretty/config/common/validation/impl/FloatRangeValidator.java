@@ -1,15 +1,15 @@
 package cc.kermanispretty.config.common.validation.impl;
 
 import cc.kermanispretty.config.common.Config;
-import cc.kermanispretty.config.common.annotation.validation.impl.IntegerRange;
-import cc.kermanispretty.config.common.validation.Validation;
+import cc.kermanispretty.config.common.annotation.validation.impl.FloatRange;
+import cc.kermanispretty.config.common.validation.Validator;
 import cc.kermanispretty.config.common.validation.exepctions.InvalidValidationExpectation;
 
 import java.lang.reflect.Field;
 
-public class IntegerRangeValidation implements Validation<Integer, IntegerRange> {
+public class FloatRangeValidator implements Validator<Float, FloatRange> {
     @Override
-    public boolean validate(Field field, Integer value, IntegerRange range, Config config) throws InvalidValidationExpectation {
+    public boolean validate(Field field, Float value, FloatRange range, Config config) throws InvalidValidationExpectation {
         if (value >= range.min() && value <= range.max()) {
             return true;
         }

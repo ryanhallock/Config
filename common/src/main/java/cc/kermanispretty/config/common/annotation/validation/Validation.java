@@ -1,17 +1,17 @@
 package cc.kermanispretty.config.common.annotation.validation;
 
-import cc.kermanispretty.config.common.validation.Validation;
+import cc.kermanispretty.config.common.validation.Validator;
 
 import java.lang.annotation.*;
 
 @Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Validator {
+public @interface Validation {
 
     /**
      * The validator class that will be used to validate the annotated field. @See Validator
      */
-    Class<? extends Validation<?, ? extends Annotation>> value();
+    Class<? extends Validator<?, ? extends Annotation>> value();
 
     /**
      * Kind of hate this but, generics. This is the type that is cast by the object so like Double.class or Integer.class

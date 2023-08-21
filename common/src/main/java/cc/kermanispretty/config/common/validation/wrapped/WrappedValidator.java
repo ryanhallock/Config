@@ -1,31 +1,31 @@
 package cc.kermanispretty.config.common.validation.wrapped;
 
 import cc.kermanispretty.config.common.Config;
-import cc.kermanispretty.config.common.annotation.validation.Validator;
-import cc.kermanispretty.config.common.validation.Validation;
+import cc.kermanispretty.config.common.annotation.validation.Validation;
+import cc.kermanispretty.config.common.validation.Validator;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
 public class WrappedValidator<T, S extends Annotation> {
 
-    private final Validation<T, S> validator;
+    private final Validator<T, S> validator;
     private final Class<T> objectClass;
     private final Class<S> annotationClass;
 
 
     @SuppressWarnings("unchecked") // Will runtime error if anything is wrong so...
-    public WrappedValidator(Class<? extends S> annotation, Validator validator) {
+    public WrappedValidator(Class<? extends S> annotation, Validation validation) {
         try { // a whole lot of unchecked casting...
-            this.validator = (Validation<T, S>) validator.value().newInstance();
-            this.objectClass = (Class<T>) validator.type();
+            this.validator = (Validator<T, S>) validation.value().newInstance();
+            this.objectClass = (Class<T>) validation.type();
             this.annotationClass = (Class<S>) annotation;
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public WrappedValidator(Validation<T, S> validator, Class<T> objectClass, Class<S> annotation) {
+    public WrappedValidator(Validator<T, S> validator, Class<T> objectClass, Class<S> annotation) {
         this.validator = validator;
         this.objectClass = objectClass;
         this.annotationClass = annotation;
@@ -46,7 +46,7 @@ public class WrappedValidator<T, S extends Annotation> {
         );
     }
 
-    public Validation<T, S> getValidator() {
+    public Validator<T, S> getValidator() {
         return validator;
     }
 

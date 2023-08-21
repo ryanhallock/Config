@@ -7,32 +7,32 @@ import cc.kermanispretty.config.common.transform.Transformer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
-public class WrappedTransformer<T, U, S extends Annotation> {
+public class WrappedTransformer<T, V extends Annotation, R> {
 
-    private final Transformer<T, U, S> transformer;
+    private final Transformer<T, V, R> transformer;
     private final Class<T> objectClass;
-    private final Class<S> annotationClass;
+    private final Class<V> annotationClass;
 
 
     @SuppressWarnings("unchecked")
-    public WrappedTransformer(Class<? extends S> annotation, Transform transform) {
+    public WrappedTransformer(Class<? extends V> annotation, Transform transform) {
         try {
-            this.transformer = (Transformer<T, U, S>) transform.value().newInstance();
+            this.transformer = (Transformer<T, V, R>) transform.value().newInstance();
             this.objectClass = (Class<T>) transform.type();
-            this.annotationClass = (Class<S>) annotation;
+            this.annotationClass = (Class<V>) annotation;
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public WrappedTransformer(Transformer<T, U, S> transformer, Class<T> objectClass, Class<S> annotation) {
+    public WrappedTransformer(Transformer<T, V, R> transformer, Class<T> objectClass, Class<V> annotation) {
         this.transformer = transformer;
         this.objectClass = objectClass;
         this.annotationClass = annotation;
     }
 
     @SuppressWarnings("unchecked")
-    public U transform(Field field, Object object, Annotation annotation, Config config) {
+    public R transform(Field field, Object object, Annotation annotation, Config config) {
         if (object != null && !objectClass.isAssignableFrom(object.getClass()))
             throw new RuntimeException(String.format("Validator %s cannot cast %s is not assignable from %s", transformer.getClass(), object.getClass(), objectClass));
         if (!annotationClass.isAssignableFrom(annotation.getClass()))
@@ -42,12 +42,12 @@ public class WrappedTransformer<T, U, S extends Annotation> {
         return transformer.transform(
                 field,
                 (T) object,
-                (S) annotation,
+                (V) annotation,
                 config
         );
     }
 
-    public Transformer<T, U, S> getTransformer() {
+    public Transformer<T, V, R> getTransformer() {
         return transformer;
     }
 
@@ -55,7 +55,7 @@ public class WrappedTransformer<T, U, S extends Annotation> {
         return objectClass;
     }
 
-    public Class<S> getAnnotationClass() {
+    public Class<V> getAnnotationClass() {
         return annotationClass;
     }
 }

@@ -9,7 +9,7 @@ import java.lang.reflect.Field;
 /**
  * A default constructor is REQUIRED.
  */
-public interface Validation<T, V extends Annotation> {
+public interface Validator<T, V extends Annotation> {
     /**
      * Validates the given object. If the object is not valid, an exception is thrown.
      *

@@ -1,6 +1,6 @@
 package cc.kermanispretty.config.common.validation;
 
-import cc.kermanispretty.config.common.annotation.validation.Validator;
+import cc.kermanispretty.config.common.annotation.validation.Validation;
 import cc.kermanispretty.config.common.annotation.validation.impl.FloatRange;
 import cc.kermanispretty.config.common.annotation.validation.impl.IntegerRange;
 import cc.kermanispretty.config.common.annotation.validation.impl.StringRange;
@@ -9,7 +9,7 @@ import cc.kermanispretty.config.common.validation.wrapped.WrappedValidator;
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
 
-public class ValidationHandler {
+public class ValidatorHandler {
     @SuppressWarnings("unchecked") // should be safe
     public static final Class<? extends Annotation>[] DEFAULT_IMPL = new Class[]{
             IntegerRange.class,
@@ -20,12 +20,12 @@ public class ValidationHandler {
 
     private final HashSet<WrappedValidator<?, ?>> validators;
 
-    public ValidationHandler() {
+    public ValidatorHandler() {
         this.validators = new HashSet<>();
     }
 
     @SafeVarargs
-    public ValidationHandler(Class<? extends Annotation>... annotations) {
+    public ValidatorHandler(Class<? extends Annotation>... annotations) {
         this();
         for (Class<? extends Annotation> annotation : annotations) {
             register(annotation);
@@ -33,17 +33,17 @@ public class ValidationHandler {
     }
 
 
-    public void register(ValidationHandler handler) {
+    public void register(ValidatorHandler handler) {
         this.validators.addAll(handler.validators);
     }
 
     public void register(Class<? extends Annotation> annotation) {
-        if (!annotation.isAnnotationPresent(Validator.class))
+        if (!annotation.isAnnotationPresent(Validation.class))
             throw new IllegalArgumentException("Validator annotations must be annotated with @Validator");
 
-        Validator validator = annotation.getAnnotation(Validator.class);
+        Validation validation = annotation.getAnnotation(Validation.class);
 
-        validators.add(new WrappedValidator<>(annotation, validator));
+        validators.add(new WrappedValidator<>(annotation, validation));
     }
 
     public HashSet<WrappedValidator<?, ?>> getValidators() {

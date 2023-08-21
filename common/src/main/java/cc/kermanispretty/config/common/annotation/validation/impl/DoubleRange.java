@@ -1,7 +1,7 @@
 package cc.kermanispretty.config.common.annotation.validation.impl;
 
-import cc.kermanispretty.config.common.annotation.validation.Validator;
-import cc.kermanispretty.config.common.validation.impl.DoubleRangeValidation;
+import cc.kermanispretty.config.common.annotation.validation.Validation;
+import cc.kermanispretty.config.common.validation.impl.DoubleRangeValidator;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@Validator(value = DoubleRangeValidation.class, type = Double.class)
+@Validation(value = DoubleRangeValidator.class, type = Double.class)
 public @interface DoubleRange {
     double min() default 0;
     double max() default 1;
