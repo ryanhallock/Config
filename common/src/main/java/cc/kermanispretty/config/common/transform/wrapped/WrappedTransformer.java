@@ -2,10 +2,10 @@ package cc.kermanispretty.config.common.transform.wrapped;
 
 import cc.kermanispretty.config.common.Config;
 import cc.kermanispretty.config.common.annotation.transfom.Transform;
+import cc.kermanispretty.config.common.reflection.context.FieldContext;
 import cc.kermanispretty.config.common.transform.Transformer;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 
 public class WrappedTransformer<T, V extends Annotation, R> {
 
@@ -32,7 +32,7 @@ public class WrappedTransformer<T, V extends Annotation, R> {
     }
 
     @SuppressWarnings("unchecked")
-    public R transform(Field field, Object object, Annotation annotation, Config config) {
+    public R transform(FieldContext fieldContext, Object object, Annotation annotation, Config config) {
         if (object != null && !objectClass.isAssignableFrom(object.getClass()))
             throw new RuntimeException(String.format("Validator %s cannot cast %s is not assignable from %s", transformer.getClass(), object.getClass(), objectClass));
         if (!annotationClass.isAssignableFrom(annotation.getClass()))
@@ -40,7 +40,7 @@ public class WrappedTransformer<T, V extends Annotation, R> {
 
         // We dont check U, because we expect the generic to warn if it is not assignable.
         return transformer.transform(
-                field,
+                fieldContext,
                 (T) object,
                 (V) annotation,
                 config

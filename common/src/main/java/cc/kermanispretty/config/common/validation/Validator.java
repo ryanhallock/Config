@@ -1,10 +1,10 @@
 package cc.kermanispretty.config.common.validation;
 
 import cc.kermanispretty.config.common.Config;
+import cc.kermanispretty.config.common.reflection.context.FieldContext;
 import cc.kermanispretty.config.common.validation.exepctions.InvalidValidationExpectation;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 
 /**
  * A default constructor is REQUIRED.
@@ -19,5 +19,5 @@ public interface Validator<T, V extends Annotation> {
      * @param config The config associated with the field.
      * @return true if its valid
      */
-    boolean validate(Field field, T object, V annotation, Config config) throws InvalidValidationExpectation;
+    boolean validate(FieldContext field, T object, V annotation, Config config) throws InvalidValidationExpectation;
 }

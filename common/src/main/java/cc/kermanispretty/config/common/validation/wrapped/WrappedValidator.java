@@ -2,10 +2,10 @@ package cc.kermanispretty.config.common.validation.wrapped;
 
 import cc.kermanispretty.config.common.Config;
 import cc.kermanispretty.config.common.annotation.validation.Validation;
+import cc.kermanispretty.config.common.reflection.context.FieldContext;
 import cc.kermanispretty.config.common.validation.Validator;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 
 public class WrappedValidator<T, S extends Annotation> {
 
@@ -32,14 +32,14 @@ public class WrappedValidator<T, S extends Annotation> {
     }
 
     @SuppressWarnings("unchecked") // We already check if they can be casted
-    public boolean validate(Field field, Object object, Annotation annotation, Config config) {
+    public boolean validate(FieldContext fieldContext, Object object, Annotation annotation, Config config) {
         if (object != null && !objectClass.isAssignableFrom(object.getClass()))
             throw new RuntimeException(String.format("Validator %s cannot cast %s is not assignable from %s", validator.getClass(), object.getClass(), objectClass));
         if (!annotationClass.isAssignableFrom(annotation.getClass()))
             throw new RuntimeException(String.format("Validator %s cannot cast %s is not assignable from %s", validator.getClass(), annotation.getClass(), annotationClass));
 
         return validator.validate(
-                field,
+                fieldContext,
                 (T) object,
                 (S) annotation,
                 config

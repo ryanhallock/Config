@@ -22,7 +22,7 @@ public class FieldContext extends LocationContext {
         } catch (Exception | ExceptionInInitializerError e) {
             System.err.println("Failed to get modifiers field. If you are using JDK 11-17 use:" +
                     "\n --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED" +
-                    "\n to your JVM arguments to fix this issue. Otherwise, static config fields will be unsupported." +
+                    "\n to your JVM arguments to fix this issue. Otherwise, final fields will be unsupported." +
                     "\n This might still not work due more recent versions of javac inlining finals at compile time."
             );
         }

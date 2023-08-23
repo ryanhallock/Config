@@ -43,7 +43,7 @@ public class BukkitConfigHandler implements ConfigHandler {
 
     @Override
     public Object get(FieldContext context) {
-        return configuration.getObject(context.getLocation(), context.getOwningClass());
+        return configuration.getObject(context.getLocation(), context.getField().getType());
     }
 
     @Override

@@ -53,19 +53,19 @@ public abstract class Config {
             Stream<Class<?>> classStream = classHierarchy.stream()
                     .filter(clazz -> clazz.isAnnotationPresent(Configurable.class));
 
-            LinkedHashSet<Class<?>> classHierarchyCopy = new LinkedHashSet<>();
+            LinkedHashSet<Class<?>> configurableClassHierarchy = new LinkedHashSet<>();
 
             classStream.forEachOrdered(clazz -> {
-                classHierarchyCopy.add(clazz); // Append it to the copy.
+                configurableClassHierarchy.add(clazz); // Append it to the copy.
 
-                String location = AnnotationLocationProcessor.process(classHierarchyCopy, separator);
+                String location = AnnotationLocationProcessor.process(configurableClassHierarchy, separator);
 
                 //Duplicates can happen, that is another reason we use a HashSet.
                 CommentContextProcessor.process(locationContexts, clazz, location, instance, false);
             });
 
             //Use the previous hierarchy to process fields.
-            StringBuilder prefix = new StringBuilder(AnnotationLocationProcessor.process(classHierarchy, separator));
+            StringBuilder prefix = new StringBuilder(AnnotationLocationProcessor.process(configurableClassHierarchy, separator));
 
             if (!isClass && instance instanceof ConfigurablePrefix)
                 prefix.append(separator)
@@ -100,16 +100,16 @@ public abstract class Config {
 
                 if (options.contains(ConfigOptionEnum.CHECK_DEFAULT_NULL) || defaultValue != null) {
                     if (options.contains(ConfigOptionEnum.CHECK_DEFAULT_FOR_VALIDATION)) {
-                        ValidationProcessor.validate(fieldContext.getField(), defaultValue, validatorHandler.getValidators(), this);
+                        ValidationProcessor.validate(fieldContext, defaultValue, validatorHandler.getValidators(), this);
                     }
 
-                    Object transformedValue = TransformerProcessor.transform(fieldContext.getField(), defaultValue, transformerHandler.getTransformers(), this);
+                    Object transformedValue = TransformerProcessor.transform(fieldContext, defaultValue, transformerHandler.getTransformers(), this);
 
                     if (defaultValue != transformedValue)
                         fieldContext.set(transformedValue);
 
                     if (options.contains(ConfigOptionEnum.CHECK_DEFAULT_TRANSFORMED_FOR_VALIDATION) && defaultValue != transformedValue) {
-                        ValidationProcessor.validate(fieldContext.getField(), transformedValue, validatorHandler.getValidators(), this);
+                        ValidationProcessor.validate(fieldContext, transformedValue, validatorHandler.getValidators(), this);
                     }
                 }
 
@@ -117,23 +117,23 @@ public abstract class Config {
                     Object value = configHandler.get(fieldContext);
 
                     if (options.contains(ConfigOptionEnum.CHECK_CONFIG_FOR_VALIDATION)) {
-                        ValidationProcessor.validate(fieldContext.getField(), value, validatorHandler.getValidators(), this);
+                        ValidationProcessor.validate(fieldContext, value, validatorHandler.getValidators(), this);
                     }
 
-                    Object transformedValue = TransformerProcessor.transform(fieldContext.getField(), value, transformerHandler.getTransformers(), this);
+                    Object transformedValue = TransformerProcessor.transform(fieldContext, value, transformerHandler.getTransformers(), this);
 
                     if (defaultValue != transformedValue)
                         fieldContext.set(transformedValue);
 
                     if (options.contains(ConfigOptionEnum.CHECK_CONFIG_TRANSFORMED_FOR_VALIDATION) && value != transformedValue) {
-                        ValidationProcessor.validate(fieldContext.getField(), transformedValue, validatorHandler.getValidators(), this);
+                        ValidationProcessor.validate(fieldContext, transformedValue, validatorHandler.getValidators(), this);
                     }
                 } else if (!fieldContext.isTransient()) {
                     if (options.contains(ConfigOptionEnum.REPLACE_DEFAULT_WITH_TRANSFORMED)) {
-                        defaultValue = TransformerProcessor.transform(fieldContext.getField(), defaultValue, transformerHandler.getTransformers(), this);
+                        defaultValue = TransformerProcessor.transform(fieldContext, defaultValue, transformerHandler.getTransformers(), this);
 
                         if (options.contains(ConfigOptionEnum.CHECK_DEFAULT_FOR_VALIDATION)) { // Revalidate.
-                            ValidationProcessor.validate(fieldContext.getField(), defaultValue, validatorHandler.getValidators(), this);
+                            ValidationProcessor.validate(fieldContext, defaultValue, validatorHandler.getValidators(), this);
                         }
                     }
 
