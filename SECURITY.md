@@ -2,12 +2,13 @@
 
 ## Supported Versions
 
-Versions that are officaly supported by issues
+Versions that are officially supported by issues
 
-| Version | Supported          |
-|---------|--------------------|
-| 2.0.0   | :white_check_mark: |
-| < 1.1.1 | :x:                |
+| Version       | Supported              |
+|---------------|------------------------|
+| 2.3.0+        | :white_check_mark:     |
+| 2.0.0 - 2.3.0 | :large_orange_diamond: |
+| < 1.1.1       | :x:                    |
 
 ## Reporting a Vulnerability
 
