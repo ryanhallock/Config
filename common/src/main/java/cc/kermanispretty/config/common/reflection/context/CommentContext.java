@@ -1,31 +1,33 @@
 package cc.kermanispretty.config.common.reflection.context;
 
+import cc.kermanispretty.config.common.location.context.LocationContext;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CommentContext extends LocationContext {
-    private final String[] comment;
-    private final CommentType type;
+    private final String[] comments;
+    private final Type type;
 
-    public CommentContext(String location, Object instance, String[] comment, CommentType type) {
+    public CommentContext(String location, Object instance, String[] comments, Type type) {
         super(location, instance);
 
-        this.comment = comment;
+        this.comments = comments;
         this.type = type;
     }
 
     public String[] getCommentArray() {
-        return comment;
+        return comments;
     }
 
     public List<String> getCommentList() {
-        return Arrays.asList(this.comment);
+        return Arrays.asList(this.comments);
     }
 
     public List<String> getCommentListSplitFix() {
-        return Arrays.stream(comment) // we need to split \n to a null value and keep it.
+        return Arrays.stream(comments) // we need to split \n to a null value and keep it.
                 .flatMap(line -> Arrays.stream(line.split("((?=\\n))"))) // keep starting \n
                 .map(line -> line.replaceAll("\\n", "")) // replace extra starting \n
                 .map(line -> line.replaceAll(" +$", "")) //java 8 solution for trimming trailing spaces (java 11+ has this function built in)
@@ -34,15 +36,15 @@ public class CommentContext extends LocationContext {
                 .collect(Collectors.toList());
     }
 
-    public CommentType getType() {
+    public Type getType() {
         return type;
     }
 
     public boolean isField() {
-        return type == CommentType.LOCATION || type == CommentType.LOCATION_INLINE;
+        return type == Type.LOCATION || type == Type.LOCATION_INLINE;
     }
 
-    public enum CommentType {
+    public enum Type {
         HEADER,
         FOOTER,
         LOCATION, // Used for fields

@@ -104,7 +104,11 @@ public class BukkitConfigBuilder {
 
         BukkitConfig config = new BukkitConfig(handler, validatorHandler, transformerHandler, options);
 
-        config.register(register.toArray());
+        try {
+            config.register(register.toArray());
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
 
         return config;
     }

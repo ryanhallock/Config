@@ -80,7 +80,7 @@ public class StringNullTransformer implements Transformer<String, Object, TestAn
 Make sure to register it
 
 ```java
- BukkitConfigBuilder.registerTransformer(TestAnnotation.class)
+ BukkitConfigBuilder#registerTransformer(TestAnnotation.class)
 ```
 
 # Packages
@@ -108,9 +108,9 @@ Feel free to open a pull request or issue. I will try to respond as soon as poss
 - [x] Working
 - [x] Code cleanup/v2
 - [ ] Bungee & Velocity
-- [ ] JSON (SoonTM)
 - [x] Config transformers
 - [x] Config Validation
 - [x] Add support for own sterilizers
+- [ ] Add support for inheriting @Configurable annotations through subclass fields.
 - [ ] Add better README.md detailing how to do more things.
 

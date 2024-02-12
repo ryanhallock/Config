@@ -1,5 +1,5 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'java'
     id 'maven-publish'
 }
@@ -7,14 +7,16 @@ plugins {
 dependencies {
     compileOnly 'org.jetbrains:annotations:23.0.0'
     compileOnly 'commons-lang:commons-lang:2.6'
-    compileOnly 'com.google.guava:guava:31.1-jre'
-    compileOnly 'org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT'
+    compileOnly 'com.google.guava:guava:33.0.0-jre'
+    compileOnly 'org.spigotmc:spigot-api:' + spigotVersion
 
     implementation 'org.yaml:snakeyaml:2.1'
-    implementation(project(':bukkit'))
+    implementation project(path: ':bukkit', configuration: 'shadow')
 }
 
 shadowJar {
+    dependsOn(":bukkit:shadowJar")
+
     relocate 'org.bukkit.configuration', 'cc.kermanispretty.config.override'
     relocate 'org.yaml.snakeyaml', 'cc.kermanispretty.config.override.ymal'
 

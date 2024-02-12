@@ -1,9 +1,9 @@
 package cc.kermanispretty.config.common.validation.impl;
 
 import cc.kermanispretty.config.common.Config;
-import cc.kermanispretty.config.common.annotation.validation.impl.StringRange;
 import cc.kermanispretty.config.common.reflection.context.FieldContext;
 import cc.kermanispretty.config.common.validation.Validator;
+import cc.kermanispretty.config.common.validation.annotation.impl.StringRange;
 import cc.kermanispretty.config.common.validation.exepctions.InvalidValidationExpectation;
 
 public class StringRangeValidator implements Validator<String, StringRange> {

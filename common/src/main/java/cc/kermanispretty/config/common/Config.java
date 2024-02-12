@@ -2,9 +2,9 @@ package cc.kermanispretty.config.common;
 
 import cc.kermanispretty.config.common.annotation.Configurable;
 import cc.kermanispretty.config.common.location.ConfigurablePrefix;
+import cc.kermanispretty.config.common.location.context.LocationContext;
 import cc.kermanispretty.config.common.reflection.context.CommentContext;
 import cc.kermanispretty.config.common.reflection.context.FieldContext;
-import cc.kermanispretty.config.common.reflection.context.LocationContext;
 import cc.kermanispretty.config.common.reflection.processor.AnnotationLocationProcessor;
 import cc.kermanispretty.config.common.reflection.processor.ClassHierarchyProcessor;
 import cc.kermanispretty.config.common.reflection.processor.CommentContextProcessor;
@@ -14,9 +14,8 @@ import cc.kermanispretty.config.common.validation.ValidatorHandler;
 import cc.kermanispretty.config.common.validation.processer.ValidationProcessor;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.LinkedHashSet;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class Config {
@@ -39,7 +38,7 @@ public abstract class Config {
                 fieldContext.getOwningClass().equals(object.getClass()));
     }
 
-    public void register(Object... objects) {
+    public void register(Object... objects) throws IllegalAccessException {
         for (Object object : objects) {
             boolean isClass = object instanceof Class<?>;
             Class<?> owningClass = isClass ? (Class<?>) object : object.getClass();
@@ -67,17 +66,24 @@ public abstract class Config {
             //Use the previous hierarchy to process fields.
             StringBuilder prefix = new StringBuilder(AnnotationLocationProcessor.process(configurableClassHierarchy, separator));
 
-            if (!isClass && instance instanceof ConfigurablePrefix)
+            if (!isClass && instance instanceof ConfigurablePrefix) // Dynamic prefix support.
                 prefix.append(separator)
                         .append(((ConfigurablePrefix) instance).getConfigurablePrefix());
 
-            Stream<Field> configurableFields = Arrays.stream(owningClass.getDeclaredFields())
-                    .filter(field -> field.isAnnotationPresent(Configurable.class));
+            LinkedHashSet<Field> configurableFields = new LinkedHashSet<>();
 
-            configurableFields.forEachOrdered(field -> {
+            Deque<Class<?>> classHierarchyDeque = new ArrayDeque<>(classHierarchy); // We use a deque to reverse the order.
+            classHierarchyDeque.descendingIterator().forEachRemaining(clazz -> configurableFields.addAll(
+                    Arrays.stream(clazz.getDeclaredFields())
+                            .filter(field -> field.isAnnotationPresent(Configurable.class))
+                            .collect(Collectors.toSet()))
+            );
+
+            configurableFields.forEach(field -> {
                 String location = prefix + separator + AnnotationLocationProcessor.processSimpleName(field);
 
-                FieldContext context = new FieldContext(field, location, instance);
+                FieldContext context = new FieldContext(field, location, instance) {
+                };
 
                 locationContexts.add(context);
 

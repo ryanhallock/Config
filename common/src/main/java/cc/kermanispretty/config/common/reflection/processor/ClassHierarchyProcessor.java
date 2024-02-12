@@ -36,11 +36,11 @@ public class ClassHierarchyProcessor {
             LinkedHashSet<Class<?>> newClasses = new LinkedHashSet<>();
 
             // Omit SEARCH_CURRENT_CLASS from the recursive search.
-            EnumSet<ConfigOptionEnum> omitedOptions = EnumSet.copyOf(configOptions);
-            omitedOptions.remove(ConfigOptionEnum.SEARCH_CURRENT_CLASS);
+            EnumSet<ConfigOptionEnum> omittedOptions = EnumSet.copyOf(configOptions);
+            omittedOptions.remove(ConfigOptionEnum.SEARCH_CURRENT_CLASS);
 
             for (Class<?> clazz : prependingClasses) {
-                process(newClasses, clazz, omitedOptions);
+                process(newClasses, clazz, omittedOptions);
             }
 
             newClasses.addAll(prependingClasses);

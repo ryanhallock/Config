@@ -1,9 +1,9 @@
 package cc.kermanispretty.config.common.validation.wrapped;
 
 import cc.kermanispretty.config.common.Config;
-import cc.kermanispretty.config.common.annotation.validation.Validation;
 import cc.kermanispretty.config.common.reflection.context.FieldContext;
 import cc.kermanispretty.config.common.validation.Validator;
+import cc.kermanispretty.config.common.validation.annotation.Validation;
 
 import java.lang.annotation.Annotation;
 

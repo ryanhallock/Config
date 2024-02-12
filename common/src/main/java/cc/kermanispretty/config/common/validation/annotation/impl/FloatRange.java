@@ -1,6 +1,6 @@
-package cc.kermanispretty.config.common.annotation.validation.impl;
+package cc.kermanispretty.config.common.validation.annotation.impl;
 
-import cc.kermanispretty.config.common.annotation.validation.Validation;
+import cc.kermanispretty.config.common.validation.annotation.Validation;
 import cc.kermanispretty.config.common.validation.impl.FloatRangeValidator;
 
 import java.lang.annotation.ElementType;
@@ -13,5 +13,6 @@ import java.lang.annotation.Target;
 @Validation(value = FloatRangeValidator.class, type = Float.class)
 public @interface FloatRange {
     float min() default 0;
+
     float max() default 1;
 }

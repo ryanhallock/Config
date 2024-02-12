@@ -1,4 +1,4 @@
-package cc.kermanispretty.config.common.reflection.context;
+package cc.kermanispretty.config.common.location.context;
 
 public abstract class LocationContext {
     protected final String location;

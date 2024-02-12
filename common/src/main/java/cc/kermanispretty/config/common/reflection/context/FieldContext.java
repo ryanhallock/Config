@@ -1,5 +1,7 @@
 package cc.kermanispretty.config.common.reflection.context;
 
+import cc.kermanispretty.config.common.location.context.LocationContext;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -43,7 +45,7 @@ public class FieldContext extends LocationContext {
     // unlocks the field to be set.
     public void push() throws IllegalAccessException {
         field.setAccessible(true);
-        if (modifiersField != null)
+        if (isFinal && modifiersField != null)
             modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
 
         this.pushed = true;
@@ -51,7 +53,7 @@ public class FieldContext extends LocationContext {
 
     public void pop() throws IllegalAccessException {
         field.setAccessible(isAccessible);
-        if (modifiersField != null && isFinal)
+        if (isFinal && modifiersField != null)
             modifiersField.setInt(field, field.getModifiers() | Modifier.FINAL);
 
         this.pushed = false;
@@ -85,5 +87,10 @@ public class FieldContext extends LocationContext {
 
     public Field getField() {
         return field;
+    }
+
+    @Override
+    public int hashCode() { // we specify this to avoid duplicates to the same location.
+        return location.hashCode();
     }
 }

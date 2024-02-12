@@ -1,6 +1,6 @@
 package cc.kermanispretty.config.common.transform;
 
-import cc.kermanispretty.config.common.annotation.transfom.Transform;
+import cc.kermanispretty.config.common.transform.annotation.Transform;
 import cc.kermanispretty.config.common.transform.wrapped.WrappedTransformer;
 
 import java.lang.annotation.Annotation;

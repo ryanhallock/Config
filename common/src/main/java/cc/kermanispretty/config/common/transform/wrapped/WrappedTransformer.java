@@ -1,9 +1,9 @@
 package cc.kermanispretty.config.common.transform.wrapped;
 
 import cc.kermanispretty.config.common.Config;
-import cc.kermanispretty.config.common.annotation.transfom.Transform;
 import cc.kermanispretty.config.common.reflection.context.FieldContext;
 import cc.kermanispretty.config.common.transform.Transformer;
+import cc.kermanispretty.config.common.transform.annotation.Transform;
 
 import java.lang.annotation.Annotation;
 

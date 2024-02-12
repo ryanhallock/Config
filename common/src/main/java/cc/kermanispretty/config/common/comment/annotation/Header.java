@@ -1,4 +1,4 @@
-package cc.kermanispretty.config.common.annotation.comment;
+package cc.kermanispretty.config.common.comment.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,8 +7,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Footer {
+public @interface Header {
     //Only works in the main instance class.
     String[] value();
 }
-

@@ -1,9 +1,9 @@
 package cc.kermanispretty.config.common.validation;
 
-import cc.kermanispretty.config.common.annotation.validation.Validation;
-import cc.kermanispretty.config.common.annotation.validation.impl.FloatRange;
-import cc.kermanispretty.config.common.annotation.validation.impl.IntegerRange;
-import cc.kermanispretty.config.common.annotation.validation.impl.StringRange;
+import cc.kermanispretty.config.common.validation.annotation.Validation;
+import cc.kermanispretty.config.common.validation.annotation.impl.FloatRange;
+import cc.kermanispretty.config.common.validation.annotation.impl.IntegerRange;
+import cc.kermanispretty.config.common.validation.annotation.impl.StringRange;
 import cc.kermanispretty.config.common.validation.wrapped.WrappedValidator;
 
 import java.lang.annotation.Annotation;

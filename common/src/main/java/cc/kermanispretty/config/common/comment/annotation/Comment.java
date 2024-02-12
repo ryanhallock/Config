@@ -1,4 +1,4 @@
-package cc.kermanispretty.config.common.annotation.comment;
+package cc.kermanispretty.config.common.comment.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
