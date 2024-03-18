@@ -92,7 +92,7 @@ Make sure to register it
 * `bukkit-compatibility` for 1.7.10 - 1.18.1+
 
 # Jitpack 
-You can use JitPack as the repository for gradle/maven. [https://jitpack.io/#KermanIsPretty/Config/](https://jitpack.io/#KermanIsPretty/Config/)
+You can use JitPack as the repository for gradle/maven. [https://jitpack.io/#ryanhallock/Config/](https://jitpack.io/#ryanhallock/Config/)
 
 # Supported Formats
 
