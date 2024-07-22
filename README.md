@@ -68,7 +68,7 @@ public @interface NullTransform {
 public class StringNullTransformer implements Transformer<String, Object, TestAnnotation> {
     @Override
     public Object transform(Field field, String string, TestAnnotation testAnnotation, Config config) throws InvalidTransformExpectation {
-        if (string != null && string.equals("null")) {
+        if ("null".equals(string)) {
             return null;
         }
 
@@ -80,7 +80,7 @@ public class StringNullTransformer implements Transformer<String, Object, TestAn
 Make sure to register it
 
 ```java
- BukkitConfigBuilder#registerTransformer(TestAnnotation.class)
+ BukkitConfigBuilder.registerTransformer(TestAnnotation.class)
 ```
 
 # Packages

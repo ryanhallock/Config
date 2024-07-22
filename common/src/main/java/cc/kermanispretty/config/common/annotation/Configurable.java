@@ -10,6 +10,10 @@ import java.lang.annotation.Target;
 public @interface Configurable {
     /**
      * If used on a class it will force all fields to have the same prefix.
+     *
+     * You dont have to specfiy a location, it will use the fieldName (As long as you dont obfuscate)
+     * Also checkout {@link ConfigurableFields}
+     *
      * @return location of the configuration file location
      */
 

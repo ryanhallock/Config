@@ -8,14 +8,17 @@ import cc.kermanispretty.config.common.reflection.context.FieldContext;
 import cc.kermanispretty.config.common.reflection.processor.AnnotationLocationProcessor;
 import cc.kermanispretty.config.common.reflection.processor.ClassHierarchyProcessor;
 import cc.kermanispretty.config.common.reflection.processor.CommentContextProcessor;
+import cc.kermanispretty.config.common.reflection.processor.ConfigurableFieldProcessor;
 import cc.kermanispretty.config.common.transform.TransformerHandler;
 import cc.kermanispretty.config.common.transform.processer.TransformerProcessor;
 import cc.kermanispretty.config.common.validation.ValidatorHandler;
 import cc.kermanispretty.config.common.validation.processer.ValidationProcessor;
 
 import java.lang.reflect.Field;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.EnumSet;
+import java.util.LinkedHashSet;
 import java.util.stream.Stream;
 
 public abstract class Config {
@@ -73,17 +76,12 @@ public abstract class Config {
             LinkedHashSet<Field> configurableFields = new LinkedHashSet<>();
 
             Deque<Class<?>> classHierarchyDeque = new ArrayDeque<>(classHierarchy); // We use a deque to reverse the order.
-            classHierarchyDeque.descendingIterator().forEachRemaining(clazz -> configurableFields.addAll(
-                    Arrays.stream(clazz.getDeclaredFields())
-                            .filter(field -> field.isAnnotationPresent(Configurable.class))
-                            .collect(Collectors.toSet()))
-            );
+            classHierarchyDeque.descendingIterator().forEachRemaining(clazz -> configurableFields.addAll(ConfigurableFieldProcessor.process(clazz)));
 
             configurableFields.forEach(field -> {
                 String location = prefix + separator + AnnotationLocationProcessor.processSimpleName(field);
 
-                FieldContext context = new FieldContext(field, location, instance) {
-                };
+                FieldContext context = new FieldContext(field, location, instance);
 
                 locationContexts.add(context);
 
