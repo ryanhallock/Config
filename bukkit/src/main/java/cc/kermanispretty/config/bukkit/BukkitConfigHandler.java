@@ -1,5 +1,6 @@
 package cc.kermanispretty.config.bukkit;
 
+import cc.kermanispretty.config.bukkit.processor.ConfigurableValueProcessor;
 import cc.kermanispretty.config.common.ConfigHandler;
 import cc.kermanispretty.config.common.reflection.context.CommentContext;
 import cc.kermanispretty.config.common.reflection.context.FieldContext;
@@ -95,7 +96,11 @@ public class BukkitConfigHandler implements ConfigHandler {
 
     @Override
     public void set(FieldContext context, Object value) {
-        configuration.set(context.getLocation(), value);
+        try {
+            configuration.set(context.getLocation(), ConfigurableValueProcessor.process(value));
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override // All of these should exist already
